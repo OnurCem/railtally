@@ -53,6 +53,8 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
   /** true once the user has zoomed or panned, so a resize no longer re-fits the map */
   const touchedRef = useRef(false);
   const flashTimer = useRef(0);
+  const movingTimer = useRef(0);
+  const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     sizeRef.current = size;
     rotatedRef.current = rotated;
@@ -77,6 +79,9 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     };
     viewRef.current = v;
     setView(v);
+    contentRef.current?.classList.add("moving");
+    window.clearTimeout(movingTimer.current);
+    movingTimer.current = window.setTimeout(() => contentRef.current?.classList.remove("moving"), 200);
   }, []);
 
   /** Zoom so the map fills the screen height (on a portrait phone) and center it. */
@@ -106,7 +111,13 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     return () => observer.disconnect();
   }, [fit]);
 
-  useEffect(() => () => window.clearTimeout(flashTimer.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(flashTimer.current);
+      window.clearTimeout(movingTimer.current);
+    },
+    [],
+  );
 
   /** Zoom keeping the screen point (sx, sy) fixed over the same map point. */
   const zoomAt = useCallback(
@@ -290,6 +301,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     >
       {base > 0 && (
         <div
+          ref={contentRef}
           className="map-content"
           data-testid="map-content"
           data-rotated={rotated}
