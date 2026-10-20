@@ -13,10 +13,17 @@ interface Props {
   state: GameState;
   colorBlind: boolean;
   selectedRouteId: string | null;
+  /** routes highlighted briefly after a tap */
+  flashRouteIds: string[];
+  /** draw the owner's initial on claimed routes (high zoom) */
+  showMarks: boolean;
   cityLabels: Map<string, string>;
 }
 
-export const MapContent = memo(function MapContent({ state, colorBlind, selectedRouteId, cityLabels }: Props) {
+/** One character that tells the players apart: the first letter of the name, otherwise the seat number. */
+const markFor = (player: { name: string }, index: number) => (player.name.trim() ? [...player.name.trim()][0].toUpperCase() : String(index + 1));
+
+export const MapContent = memo(function MapContent({ state, colorBlind, selectedRouteId, flashRouteIds, showMarks, cityLabels }: Props) {
   const playerById = new Map(state.players.map((p) => [p.id, p]));
   return (
     <svg
@@ -39,6 +46,21 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
               points={g.points.map((p) => p.join(",")).join(" ")}
               fill="none"
               className="map-selected"
+              strokeWidth={CAR_WIDTH + 12}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+
+      {flashRouteIds.length > 0 &&
+        geometries
+          .filter((g) => flashRouteIds.includes(g.route.id) && g.route.id !== selectedRouteId)
+          .map((g) => (
+            <polyline
+              key={g.route.id}
+              points={g.points.map((p) => p.join(",")).join(" ")}
+              fill="none"
+              className="map-flash"
               strokeWidth={CAR_WIDTH + 12}
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -73,6 +95,16 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
                     rx={2.5}
                     fill={`url(#${patternId(pattern)})`}
                   />
+                )}
+                {showMarks && owner && (
+                  <text
+                    className="owner-mark"
+                    data-testid="owner-mark"
+                    transform={Math.abs(car.angle) > 90 ? "rotate(180)" : undefined}
+                    fill={owner.color === "yellow" ? INK : "#ffffff"}
+                  >
+                    {markFor(owner, state.players.indexOf(owner))}
+                  </text>
                 )}
                 {car.locomotive && !owner && (
                   <circle r={3.6} fill={INK} stroke="#ffffff" strokeWidth={1.2} />

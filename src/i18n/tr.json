@@ -82,7 +82,8 @@
     "placeStation": "İstasyonu şu oyuncu için koy",
     "stationOwner": "{{name}} oyuncusunun istasyonu",
     "removeStation": "İstasyonu kaldır",
-    "hint": "Bir hattı almak için dokun. İstasyon için şehre basılı tut."
+    "hint": "Bir hattı almak için dokun. İstasyon için şehre basılı tut.",
+    "fit": "Haritayı sığdır"
   },
   "score": {
     "title": "Puan",

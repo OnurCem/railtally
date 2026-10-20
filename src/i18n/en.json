@@ -82,7 +82,8 @@
     "placeStation": "Place station for",
     "stationOwner": "Station of {{name}}",
     "removeStation": "Remove station",
-    "hint": "Tap a route to claim it. Press and hold a city for a station."
+    "hint": "Tap a route to claim it. Press and hold a city for a station.",
+    "fit": "Fit map"
   },
   "score": {
     "title": "Score",

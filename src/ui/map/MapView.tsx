@@ -12,6 +12,8 @@ const MOVE_SLOP_PX = 8;
 const LONG_PRESS_MS = 550;
 const DOUBLE_TAP_MS = 320;
 const PAN_MARGIN_PX = 40;
+/** owner marks on claimed routes appear once one map unit covers this many screen px */
+const MARKS_SCALE = 1.6;
 
 interface View {
   k: number;
@@ -30,7 +32,7 @@ interface Props {
   rotated: boolean;
   colorBlind: boolean;
   selectedRouteId: string | null;
-  /** change this value to reset zoom and pan */
+  /** change this value to fit the map to the screen height again */
   resetSignal: number;
   onRoutesTap: (routeIds: string[]) => void;
   onCityLongPress: (cityId: string) => void;
@@ -42,11 +44,15 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
   const [view, setView] = useState<View>({ k: 1, px: 0, py: 0 });
+  const [flash, setFlash] = useState<string[]>([]);
 
   const sizeRef = useRef(size);
   const viewRef = useRef(view);
   const rotatedRef = useRef(rotated);
   const handlersRef = useRef({ onRoutesTap, onCityLongPress });
+  /** true once the user has zoomed or panned, so a resize no longer re-fits the map */
+  const touchedRef = useRef(false);
+  const flashTimer = useRef(0);
   useEffect(() => {
     sizeRef.current = size;
     rotatedRef.current = rotated;
@@ -73,18 +79,34 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     setView(v);
   }, []);
 
+  /** Zoom so the map fills the screen height (on a portrait phone) and center it. */
+  const fit = useCallback(() => {
+    const { w, h } = sizeRef.current;
+    touchedRef.current = false;
+    if (!w || !h) return;
+    const contentHeight = MAP_HEIGHT * Math.min(w / MAP_WIDTH, h / MAP_HEIGHT);
+    applyView({ k: h / contentHeight, px: 0, py: 0 });
+  }, [applyView]);
+
   useEffect(() => {
-    if (resetSignal > 0) applyView({ k: 1, px: 0, py: 0 });
-  }, [resetSignal, applyView]);
+    if (resetSignal > 0) fit();
+  }, [resetSignal, fit]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const observer = new ResizeObserver(() => setSize({ w: el.clientWidth, h: el.clientHeight }));
+    const measure = () => {
+      sizeRef.current = { w: el.clientWidth, h: el.clientHeight };
+      setSize(sizeRef.current);
+      if (!touchedRef.current) fit();
+    };
+    const observer = new ResizeObserver(measure);
     observer.observe(el);
-    setSize({ w: el.clientWidth, h: el.clientHeight });
+    measure();
     return () => observer.disconnect();
-  }, []);
+  }, [fit]);
+
+  useEffect(() => () => window.clearTimeout(flashTimer.current), []);
 
   /** Zoom keeping the screen point (sx, sy) fixed over the same map point. */
   const zoomAt = useCallback(
@@ -107,6 +129,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     if (!el) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      touchedRef.current = true;
       const rect = el.getBoundingClientRect();
       zoomAt(viewRef.current.k * Math.exp(-e.deltaY * 0.0015), e.clientX - rect.left, e.clientY - rect.top);
     };
@@ -180,6 +203,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     } else if (pointers.current.size === 2) {
       const [a, b] = [...pointers.current.values()];
       g.moved = true;
+      touchedRef.current = true;
       g.pinchDist = Math.hypot(a.x - b.x, a.y - b.y) || 1;
       g.pinchK = viewRef.current.k;
       g.lastX = (a.x + b.x) / 2;
@@ -195,6 +219,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
     if (pointers.current.size === 1) {
       if (!g.moved && Math.hypot(e.clientX - g.startX, e.clientY - g.startY) > MOVE_SLOP_PX) {
         g.moved = true;
+        touchedRef.current = true;
         window.clearTimeout(g.timer);
         g.lastX = e.clientX;
         g.lastY = e.clientY;
@@ -232,12 +257,16 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
 
     const hits = routesNear(toMap(e.clientX, e.clientY), radiusInMap(TAP_RADIUS_PX));
     if (hits.length > 0) {
+      const ids = hits.map((h) => h.route.id);
+      setFlash(ids);
+      window.clearTimeout(flashTimer.current);
+      flashTimer.current = window.setTimeout(() => setFlash([]), 350);
       handlersRef.current.onRoutesTap(hits.map((h) => h.route.id));
       return;
     }
     const now = Date.now();
     if (now - g.lastEmptyTap < DOUBLE_TAP_MS) {
-      applyView({ k: 1, px: 0, py: 0 });
+      fit();
       g.lastEmptyTap = 0;
     } else {
       g.lastEmptyTap = now;
@@ -257,7 +286,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onDoubleClick={() => applyView({ k: 1, px: 0, py: 0 })}
+      onDoubleClick={fit}
     >
       {base > 0 && (
         <div
@@ -271,7 +300,14 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
             transform: `translate(${tx}px, ${ty}px) scale(${view.k}) translate(${contentW / 2}px, ${contentH / 2}px) rotate(${rotated ? 180 : 0}deg) translate(${-contentW / 2}px, ${-contentH / 2}px)`,
           }}
         >
-          <MapContent state={state} colorBlind={colorBlind} selectedRouteId={selectedRouteId} cityLabels={cityLabels} />
+          <MapContent
+            state={state}
+            colorBlind={colorBlind}
+            selectedRouteId={selectedRouteId}
+            flashRouteIds={flash}
+            showMarks={view.k * base >= MARKS_SCALE}
+            cityLabels={cityLabels}
+          />
         </div>
       )}
     </div>

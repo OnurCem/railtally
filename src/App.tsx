@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGame } from "./store/gameStore";
+import { closeDataCheck, useHistory } from "./ui/hooks/useHistory";
 import { DataCheck } from "./ui/screens/DataCheck";
 import { EndGame } from "./ui/screens/EndGame";
 import { Home } from "./ui/screens/Home";
@@ -11,16 +12,18 @@ const isDataHash = () => window.location.hash === "#data";
 export function App() {
   const screen = useGame((s) => s.screen);
   const [dataCheck, setDataCheck] = useState(isDataHash);
+  useHistory();
   useEffect(() => {
-    const onHash = () => setDataCheck(isDataHash());
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    const onChange = () => setDataCheck(isDataHash());
+    window.addEventListener("hashchange", onChange);
+    window.addEventListener("popstate", onChange);
+    return () => {
+      window.removeEventListener("hashchange", onChange);
+      window.removeEventListener("popstate", onChange);
+    };
   }, []);
 
-  if (dataCheck) return <DataCheck onBack={() => {
-          window.history.replaceState(null, "", window.location.pathname);
-          setDataCheck(false);
-        }} />;
+  if (dataCheck) return <DataCheck onBack={closeDataCheck} />;
   switch (screen) {
     case "new":
       return <NewGame />;

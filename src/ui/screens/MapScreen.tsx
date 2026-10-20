@@ -111,6 +111,10 @@ export function MapScreen() {
           <span aria-hidden="true">⟳</span>
           {t("game.rotate")}
         </button>
+        <button className="tool" onClick={() => setResetSignal((n) => n + 1)} data-testid="fit">
+          <span aria-hidden="true">⤢</span>
+          {t("game.fit")}
+        </button>
         {readOnly ? (
           <button className="tool" onClick={() => go("summary")} data-testid="summary">
             <span aria-hidden="true">≡</span>

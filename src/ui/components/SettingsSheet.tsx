@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useSettings, type Settings } from "../../store/settingsStore";
+import { openDataCheck } from "../hooks/useHistory";
 import { Sheet } from "./Sheet";
 
 export function SettingsSheet({ onClose }: { onClose: () => void }) {
@@ -33,7 +34,16 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
         <input type="checkbox" checked={settings.colorBlind} onChange={(e) => update({ colorBlind: e.target.checked })} />
         <span>{t("settings.colorBlind")}</span>
       </label>
-      <a className="button" href="#data" onClick={onClose} data-testid="open-data-check">
+      <a
+        className="button"
+        href="#data"
+        data-testid="open-data-check"
+        onClick={(e) => {
+          e.preventDefault();
+          onClose();
+          openDataCheck();
+        }}
+      >
         {t("dataCheck.open")}
       </a>
     </Sheet>

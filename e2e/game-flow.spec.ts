@@ -56,6 +56,9 @@ test("double routes: both can be used with 4 players", async ({ page }) => {
 
 test("a long press on a city places a station", async ({ page }) => {
   await startGame(page);
+  // zoom out to the whole map so that Paris is on screen
+  await page.getByTestId("map-viewport").dispatchEvent("wheel", { deltaY: 2000, clientX: 190, clientY: 300 });
+  await expect(page.getByTestId("map-content")).toHaveAttribute("data-zoom", "1.00");
   const box = (await page.locator('[data-city="paris"] circle').first().boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
@@ -70,12 +73,12 @@ test("a long press on a city places a station", async ({ page }) => {
 test("zoom with the wheel and reset with the menu", async ({ page }) => {
   await startGame(page);
   const content = page.getByTestId("map-content");
-  await expect(content).toHaveAttribute("data-zoom", "1.00");
+  const fitZoom = Number(await content.getAttribute("data-zoom"));
   await page.getByTestId("map-viewport").dispatchEvent("wheel", { deltaY: -400, clientX: 190, clientY: 300 });
-  await expect.poll(async () => Number(await content.getAttribute("data-zoom"))).toBeGreaterThan(1.3);
+  await expect.poll(async () => Number(await content.getAttribute("data-zoom"))).toBeGreaterThan(fitZoom * 1.3);
   await page.getByTestId("menu").click();
   await page.getByRole("button", { name: "Reset view" }).click();
-  await expect(content).toHaveAttribute("data-zoom", "1.00");
+  await expect(content).toHaveAttribute("data-zoom", fitZoom.toFixed(2));
 });
 
 test("end the game, enter tickets and see the final score in the history", async ({ page }) => {
@@ -186,4 +189,85 @@ test("the data check screen lists cities and tickets", async ({ page }) => {
   await expect(page.getByTestId("new-game")).toBeVisible();
   await page.goto("/#data");
   await expect(page.getByTestId("data-check")).toBeVisible();
+});
+
+test("the map starts zoomed to the screen height and the Fit button restores it", async ({ page }) => {
+  await startGame(page);
+  const viewport = page.getByTestId("map-viewport");
+  const content = page.getByTestId("map-content");
+  const fitZoom = Number(await content.getAttribute("data-zoom"));
+  expect(fitZoom).toBeGreaterThan(1.3); // a portrait phone is narrower than the map
+  const v = (await viewport.boundingBox())!;
+  const svg = (await content.locator("svg").boundingBox())!;
+  expect(Math.abs(svg.height - v.height)).toBeLessThan(3);
+  expect(Math.abs(svg.y + svg.height / 2 - (v.y + v.height / 2))).toBeLessThan(3); // vertically centered
+  expect(Math.abs(svg.x + svg.width / 2 - (v.x + v.width / 2))).toBeLessThan(3); // horizontally centered
+
+  await viewport.dispatchEvent("wheel", { deltaY: -600, clientX: 190, clientY: 300 });
+  await expect.poll(async () => Number(await content.getAttribute("data-zoom"))).toBeGreaterThan(fitZoom + 0.5);
+  await page.getByTestId("fit").click();
+  await expect(content).toHaveAttribute("data-zoom", fitZoom.toFixed(2));
+});
+
+test("the Android back button goes summary → map → home", async ({ page }) => {
+  await startGame(page, 2);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("end-game").click();
+  await expect(page.getByTestId("end-screen")).toBeVisible();
+
+  await page.goBack();
+  await expect(page.getByTestId("map-viewport")).toBeVisible();
+  await expect(page.getByText("Finished game (read-only)")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("new-game")).toBeVisible();
+  await page.goForward(); // forward into a game that is closed leads nowhere
+  await expect(page.getByTestId("new-game")).toBeVisible();
+});
+
+test("back from the new-game screen and from the data check", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("new-game").click();
+  await expect(page.getByTestId("start-game")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("new-game")).toBeVisible();
+
+  await page.getByTestId("open-settings").click();
+  await page.getByTestId("open-data-check").click();
+  await expect(page.getByTestId("data-check")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("new-game")).toBeVisible();
+});
+
+test("opening a finished game and pressing back walks to the map, then home", async ({ page }) => {
+  await startGame(page, 2);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("end-game").click();
+  await page.getByTestId("home").click();
+  await expect(page.getByTestId("game-card")).toBeVisible();
+  await page.getByTestId("game-card").getByRole("button").first().click();
+  await expect(page.getByTestId("end-screen")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("map-viewport")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("game-card")).toBeVisible();
+});
+
+test("claimed routes show the owner's mark only at high zoom", async ({ page }) => {
+  await startGame(page);
+  await claimRoute(page, "budapest-kyiv-a");
+  await expect(page.getByTestId("owner-mark")).toHaveCount(0);
+  const viewport = page.getByTestId("map-viewport");
+  for (let i = 0; i < 4; i++) await viewport.dispatchEvent("wheel", { deltaY: -500, clientX: 190, clientY: 300 });
+  await expect.poll(async () => page.getByTestId("owner-mark").count()).toBeGreaterThan(0);
+  await expect(page.getByTestId("owner-mark").first()).toHaveText("1");
+  await page.getByTestId("fit").click();
+  await expect(page.getByTestId("owner-mark")).toHaveCount(0);
+});
+
+test("tapping a route flashes a highlight", async ({ page }) => {
+  await startGame(page);
+  const cars = page.locator('[data-route="budapest-kyiv-a"] rect');
+  const box = (await cars.nth(1).boundingBox())!;
+  await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.locator(".map-selected, .map-flash").first()).toBeAttached();
 });
