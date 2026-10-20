@@ -4,6 +4,7 @@ import { MAP_HEIGHT, MAP_WIDTH } from "../../data/projection";
 import type { GameState } from "../../game/state";
 import { PLAYER_FILL, ROUTE_FILL } from "./colors";
 import { cityPoints, geometries, NODE_RADIUS } from "./geometry";
+import { labels } from "./labels";
 import { patternId, Patterns } from "./Patterns";
 
 const CAR_WIDTH = 11;
@@ -34,15 +35,14 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
         geometries
           .filter((g) => g.route.id === selectedRouteId)
           .map((g) => (
-            <line
+            <polyline
               key="sel"
-              x1={g.start[0]}
-              y1={g.start[1]}
-              x2={g.end[0]}
-              y2={g.end[1]}
+              points={g.points.map((p) => p.join(",")).join(" ")}
+              fill="none"
               className="map-selected"
               strokeWidth={CAR_WIDTH + 12}
               strokeLinecap="round"
+              strokeLinejoin="round"
             />
           ))}
 
@@ -98,12 +98,7 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
               strokeWidth={station ? 3 : 2.5}
             />
             {station && <path d={`M${x - 5} ${y + 3} L${x} ${y - 5} L${x + 5} ${y + 3} Z`} fill="#ffffff" />}
-            <text
-              x={x + (city.labelOffset?.dx ?? 0)}
-              y={y + (city.labelOffset?.dy ?? -NODE_RADIUS - 5)}
-              textAnchor="middle"
-              className="map-label"
-            >
+            <text x={labels.get(city.id)!.x} y={labels.get(city.id)!.y} textAnchor={labels.get(city.id)!.anchor} className="map-label">
               {cityLabels.get(city.id) ?? city.name}
             </text>
           </g>
