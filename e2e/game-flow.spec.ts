@@ -173,3 +173,17 @@ test("works offline after the first visit", async ({ page, context }) => {
   await expect(page.getByTestId("map-viewport")).toBeVisible();
   await context.setOffline(false);
 });
+
+test("the data check screen lists cities and tickets", async ({ page }) => {
+  await page.goto("/");
+  await page.getByTestId("open-settings").click();
+  await page.getByTestId("open-data-check").click();
+  await expect(page.getByTestId("data-check")).toBeVisible();
+  await expect(page.getByTestId("data-totals")).toContainText("47 cities");
+  await expect(page.getByTestId("data-city-paris")).toContainText("Pamplona");
+  await expect(page.getByTestId("data-tickets").locator("tbody tr")).toHaveCount(46);
+  await page.getByTestId("data-back").click();
+  await expect(page.getByTestId("new-game")).toBeVisible();
+  await page.goto("/#data");
+  await expect(page.getByTestId("data-check")).toBeVisible();
+});

@@ -143,5 +143,25 @@
     "invalidPoints": "Enter a whole number.",
     "gameExists": "A game already exists.",
     "noGame": "No game is open."
+  },
+  "dataCheck": {
+    "title": "Data check",
+    "print": "Print",
+    "intro": "Compare this list with your physical board. Every route is listed under both of its cities. Report anything that differs.",
+    "totals": "{{cities}} cities, {{routes}} routes, {{trains}} train spaces, {{tickets}} tickets.",
+    "cities": "Cities and routes",
+    "tickets": "Tickets",
+    "from": "From",
+    "to": "To",
+    "points": "Points",
+    "kind": "Type",
+    "long": "Long",
+    "short": "Short",
+    "tunnel": "tunnel",
+    "ferry_one": "ferry ({{count}} locomotive)",
+    "ferry_other": "ferry ({{count}} locomotives)",
+    "double": "double route",
+    "gray": "Gray",
+    "open": "Data check (compare with board)"
   }
 }

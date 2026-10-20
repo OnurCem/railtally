@@ -163,3 +163,17 @@ button:disabled { opacity: 0.45; cursor: default; }
 .sheet-header { display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg); padding-top: 8px; }
 .sheet-header h2 { margin: 0; }
 .sheet-body { display: flex; flex-direction: column; gap: 10px; padding-top: 6px; }
+
+/* ---------- Data check ---------- */
+.data-check table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.data-check td, .data-check th { padding: 3px 6px; border-bottom: 1px solid var(--border); text-align: left; }
+.data-check .num { text-align: right; width: 3em; }
+.data-check h3 { margin: 12px 0 4px; }
+.data-check .data-city { break-inside: avoid; }
+a.button { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; margin-top: 8px; }
+@media print {
+  html, body, #root, .screen { height: auto !important; overflow: visible !important; background: #fff !important; color: #000 !important; }
+  .no-print { display: none !important; }
+  .data-check { max-width: none; padding: 0; display: block; font-size: 11pt; }
+  .data-check section > .data-city { display: inline-block; width: 48%; vertical-align: top; }
+}

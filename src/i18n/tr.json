@@ -143,5 +143,25 @@
     "invalidPoints": "Tam sayı gir.",
     "gameExists": "Zaten bir oyun var.",
     "noGame": "Açık oyun yok."
+  },
+  "dataCheck": {
+    "title": "Veri kontrolü",
+    "print": "Yazdır",
+    "intro": "Bu listeyi gerçek oyun tahtanızla karşılaştırın. Her rota iki şehrinin altında da listelenir. Farklı olan her şeyi bildirin.",
+    "totals": "{{cities}} şehir, {{routes}} rota, {{trains}} tren alanı, {{tickets}} bilet.",
+    "cities": "Şehirler ve rotalar",
+    "tickets": "Biletler",
+    "from": "Nereden",
+    "to": "Nereye",
+    "points": "Puan",
+    "kind": "Tür",
+    "long": "Uzun",
+    "short": "Kısa",
+    "tunnel": "tünel",
+    "ferry_one": "feribot ({{count}} lokomotif)",
+    "ferry_other": "feribot ({{count}} lokomotif)",
+    "double": "çift rota",
+    "gray": "Gri",
+    "open": "Veri kontrolü (tahtayla karşılaştır)"
   }
 }

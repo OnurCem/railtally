@@ -33,6 +33,9 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
         <input type="checkbox" checked={settings.colorBlind} onChange={(e) => update({ colorBlind: e.target.checked })} />
         <span>{t("settings.colorBlind")}</span>
       </label>
+      <a className="button" href="#data" onClick={onClose} data-testid="open-data-check">
+        {t("dataCheck.open")}
+      </a>
     </Sheet>
   );
 }
