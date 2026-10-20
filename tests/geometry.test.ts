@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { cities } from "../src/data/cities";
 import { routes } from "../src/data/routes";
 import { MAP_HEIGHT, MAP_WIDTH, project } from "../src/data/projection";
-import { cityNear, cityPoints, distanceToPolyline, geometries, routesNear } from "../src/ui/map/geometry";
+import { CAR_WIDTH, cityNear, cityPoints, distanceToPolyline, geometries, routesNear, type Car } from "../src/ui/map/geometry";
 import { placeLabels, routeSamplesUnder } from "../src/ui/map/labelPlacement";
 
 describe("projection", () => {
@@ -52,7 +52,51 @@ const linesCross = (p: P[], q: P[]) =>
 
 const labels = placeLabels();
 
+const corners = (c: Car): P[] => {
+  const r = (c.angle * Math.PI) / 180;
+  const [cos, sin] = [Math.cos(r), Math.sin(r)];
+  return ([[-1, -1], [1, -1], [1, 1], [-1, 1]] as P[]).map(([a, b]) => [
+    c.x + (cos * a * c.length) / 2 - (sin * b * CAR_WIDTH) / 2,
+    c.y + (sin * a * c.length) / 2 + (cos * b * CAR_WIDTH) / 2,
+  ]);
+};
+
+/** Separating-axis test: how deep two rotated rectangles overlap (0 when apart). */
+function overlapDepth(a: P[], b: P[]): number {
+  let depth = Infinity;
+  for (const poly of [a, b]) {
+    for (let i = 0; i < 4; i++) {
+      const [p, q] = [poly[i], poly[(i + 1) % 4]];
+      const len = Math.hypot(q[1] - p[1], p[0] - q[0]);
+      const axis: P = [(q[1] - p[1]) / len, (p[0] - q[0]) / len];
+      const range = (pts: P[]) => {
+        const d = pts.map((t) => t[0] * axis[0] + t[1] * axis[1]);
+        return [Math.min(...d), Math.max(...d)];
+      };
+      const [[a0, a1], [b0, b1]] = [range(a), range(b)];
+      const o = Math.min(a1, b1) - Math.max(a0, b0);
+      if (o <= 0) return 0;
+      depth = Math.min(depth, o);
+    }
+  }
+  return depth;
+}
+
 describe("readability", () => {
+  it("cars of different routes never overlap (also where routes meet at a city)", () => {
+    const clashes: string[] = [];
+    for (let i = 0; i < geometries.length; i++) {
+      for (let j = i + 1; j < geometries.length; j++) {
+        for (const ca of geometries[i].cars) {
+          for (const cb of geometries[j].cars) {
+            if (overlapDepth(corners(ca), corners(cb)) > 0.5) clashes.push(`${geometries[i].route.id} x ${geometries[j].route.id}`);
+          }
+        }
+      }
+    }
+    expect(clashes).toEqual([]);
+  });
+
   it("no two routes cross each other", () => {
     const crossing: string[] = [];
     for (let i = 0; i < geometries.length; i++) {

@@ -3,11 +3,10 @@ import { cities } from "../../data/cities";
 import { MAP_HEIGHT, MAP_WIDTH } from "../../data/projection";
 import type { GameState } from "../../game/state";
 import { PLAYER_FILL, ROUTE_FILL } from "./colors";
-import { cityPoints, geometries, NODE_RADIUS } from "./geometry";
+import { CAR_WIDTH, cityPoints, geometries, NODE_RADIUS } from "./geometry";
 import { labels } from "./labels";
 import { patternId, Patterns } from "./Patterns";
 
-const CAR_WIDTH = 11;
 const INK = "#10202b";
 
 interface Props {

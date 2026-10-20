@@ -9,7 +9,12 @@ export type Point = [number, number];
 export const NODE_RADIUS = 13;
 const TRIM = NODE_RADIUS + 4;
 const CAR_GAP = 3;
+export const CAR_WIDTH = 11;
 const DOUBLE_OFFSET = 6.5;
+/** Cars of different routes leaving the same city must stay at least this far apart (centre to centre). */
+const MIN_SEPARATION = CAR_WIDTH + 2;
+/** How far cars may start beyond the normal trim to keep apart from a neighbouring route. */
+const MAX_EXTRA_TRIM = 18;
 
 export interface Car {
   x: number;
@@ -76,29 +81,79 @@ export function bendFor(route: Route, a: Point, b: Point): number {
   return side * ratio * dist;
 }
 
-function buildGeometry(route: Route): RouteGeometry {
+interface Line {
+  route: Route;
+  line: Point[];
+  cumulative: number[];
+  total: number;
+}
+
+function makeLine(route: Route): Line {
   const a = cityPoints.get(route.from)!;
   const b = cityPoints.get(route.to)!;
   const side = route.doubleOf ? (route.id.endsWith("-a") ? 1 : -1) : 0;
   const line = centreLine(a, b, bendFor(route, a, b), DOUBLE_OFFSET * side);
-
   const cumulative = [0];
   for (let i = 1; i < line.length; i++) {
     cumulative.push(cumulative[i - 1] + Math.hypot(line[i][0] - line[i - 1][0], line[i][1] - line[i - 1][1]));
   }
-  const total = cumulative[cumulative.length - 1];
-  const usable = total - 2 * TRIM;
+  return { route, line, cumulative, total: cumulative[cumulative.length - 1] };
+}
+
+const pointFromEnd = (l: Line, atEnd: boolean, t: number): Point =>
+  along(l.line, l.cumulative, atEnd ? l.total - t : t).point;
+
+/**
+ * Routes that leave a city at a narrow angle would put their first cars on top of each other.
+ * Returns how far from the city both routes must start so their cars keep apart.
+ */
+function clearance(a: Line, aAtEnd: boolean, b: Line, bAtEnd: boolean): number {
+  for (let t = TRIM; t < TRIM + MAX_EXTRA_TRIM; t++) {
+    const pa = pointFromEnd(a, aAtEnd, t);
+    const pb = pointFromEnd(b, bAtEnd, t);
+    if (Math.hypot(pa[0] - pb[0], pa[1] - pb[1]) >= MIN_SEPARATION) return t;
+  }
+  return TRIM + MAX_EXTRA_TRIM;
+}
+
+function computeTrims(lines: Line[]): [number, number][] {
+  const trims = lines.map((): [number, number] => [TRIM, TRIM]);
+  for (let i = 0; i < lines.length; i++) {
+    for (let j = i + 1; j < lines.length; j++) {
+      const [a, b] = [lines[i], lines[j]];
+      if (a.route.doubleOf === b.route.id) continue; // the two lanes of a double route run side by side
+      for (const city of [a.route.from, a.route.to]) {
+        if (city !== b.route.from && city !== b.route.to) continue;
+        const aAtEnd = a.route.to === city;
+        const bAtEnd = b.route.to === city;
+        const t = clearance(a, aAtEnd, b, bAtEnd);
+        trims[i][aAtEnd ? 1 : 0] = Math.max(trims[i][aAtEnd ? 1 : 0], t);
+        trims[j][bAtEnd ? 1 : 0] = Math.max(trims[j][bAtEnd ? 1 : 0], t);
+      }
+    }
+  }
+  // never eat more than a fifth of a short route
+  return trims.map(([s0, s1], i) => {
+    const room = lines[i].total * 0.2;
+    return [Math.min(s0, TRIM + room), Math.min(s1, TRIM + room)];
+  });
+}
+
+function buildGeometry({ route, line, cumulative, total }: Line, [trimStart, trimEnd]: [number, number]): RouteGeometry {
+  const usable = total - trimStart - trimEnd;
   const pitch = usable / route.length;
 
   const cars: Car[] = Array.from({ length: route.length }, (_, i) => {
-    const { point, angle } = along(line, cumulative, TRIM + pitch * (i + 0.5));
+    const { point, angle } = along(line, cumulative, trimStart + pitch * (i + 0.5));
     return { x: point[0], y: point[1], angle, length: pitch - CAR_GAP, locomotive: i < route.ferryLocomotives };
   });
-  const points = Array.from({ length: 17 }, (_, i) => along(line, cumulative, TRIM + (usable * i) / 16).point);
+  const points = Array.from({ length: 17 }, (_, i) => along(line, cumulative, trimStart + (usable * i) / 16).point);
   return { route, start: points[0], end: points[points.length - 1], points, cars };
 }
 
-export const geometries: RouteGeometry[] = routes.map(buildGeometry);
+const allLines = routes.map(makeLine);
+const allTrims = computeTrims(allLines);
+export const geometries: RouteGeometry[] = allLines.map((l, i) => buildGeometry(l, allTrims[i]));
 
 export function distanceToPolyline(p: Point, points: Point[]): number {
   let best = Infinity;
