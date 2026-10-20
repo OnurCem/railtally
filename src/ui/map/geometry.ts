@@ -1,6 +1,6 @@
 import { cities } from "../../data/cities";
 import { project } from "../../data/projection";
-import { routeBend } from "../../data/curves";
+import { COMPASS, routeBulge } from "../../data/curves";
 import { routes } from "../../data/routes";
 import type { Route } from "../../data/types";
 
@@ -63,11 +63,24 @@ function along(points: Point[], cumulative: number[], s: number): { point: Point
   };
 }
 
+/** Signed bend (positive = left of travel) that makes the route bulge the way the original board does. */
+export function bendFor(route: Route, a: Point, b: Point): number {
+  const bulge = routeBulge[`${route.from}-${route.to}`];
+  if (!bulge) return 0;
+  const [compass, ratio] = bulge;
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const dist = Math.hypot(dx, dy);
+  const [vx, vy] = COMPASS[compass];
+  const side = Math.sign((vx * dy - vy * dx) / dist) || 1; // dot with the left normal (dy, -dx)
+  return side * ratio * dist;
+}
+
 function buildGeometry(route: Route): RouteGeometry {
   const a = cityPoints.get(route.from)!;
   const b = cityPoints.get(route.to)!;
   const side = route.doubleOf ? (route.id.endsWith("-a") ? 1 : -1) : 0;
-  const line = centreLine(a, b, routeBend[`${route.from}-${route.to}`] ?? 0, DOUBLE_OFFSET * side);
+  const line = centreLine(a, b, bendFor(route, a, b), DOUBLE_OFFSET * side);
 
   const cumulative = [0];
   for (let i = 1; i < line.length; i++) {
