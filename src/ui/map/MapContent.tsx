@@ -9,6 +9,18 @@ import { patternId, Patterns } from "./Patterns";
 
 const INK = "#10202b";
 
+/** What the plan overlay draws. */
+export interface PlanOverlay {
+  /** routes I still have to claim */
+  routes: string[];
+  /** opponent routes the plan borrows through stations */
+  borrowed: string[];
+  /** cities where the plan needs a station of mine */
+  stations: string[];
+  /** route highlighted from the plan list */
+  focus: string | null;
+}
+
 interface Props {
   state: GameState;
   colorBlind: boolean;
@@ -18,12 +30,14 @@ interface Props {
   /** draw the owner's initial on claimed routes (high zoom) */
   showMarks: boolean;
   cityLabels: Map<string, string>;
+  /** planned routes and stations, or null when the overlay is off */
+  plan: PlanOverlay | null;
 }
 
 /** One character that tells the players apart: the first letter of the name, otherwise the seat number. */
 const markFor = (player: { name: string }, index: number) => (player.name.trim() ? [...player.name.trim()][0].toUpperCase() : String(index + 1));
 
-export const MapContent = memo(function MapContent({ state, colorBlind, selectedRouteId, flashRouteIds, showMarks, cityLabels }: Props) {
+export const MapContent = memo(function MapContent({ state, colorBlind, selectedRouteId, flashRouteIds, showMarks, cityLabels, plan }: Props) {
   const playerById = new Map(state.players.map((p) => [p.id, p]));
   return (
     <svg
@@ -49,6 +63,48 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
               strokeWidth={CAR_WIDTH + 12}
               strokeLinecap="round"
               strokeLinejoin="round"
+            />
+          ))}
+
+      {plan && (
+        <g className="plan-overlay" data-testid="plan-overlay" pointerEvents="none">
+          {geometries
+            .filter((g) => plan.routes.includes(g.route.id) || plan.borrowed.includes(g.route.id))
+            .map((g) => {
+              const points = g.points.map((p) => p.join(",")).join(" ");
+              const borrowed = plan.borrowed.includes(g.route.id);
+              return (
+                <g key={g.route.id} data-plan-route={g.route.id} data-focus={plan.focus === g.route.id || undefined}>
+                  <polyline points={points} fill="none" className="plan-under" strokeWidth={CAR_WIDTH + 10} strokeLinecap="butt" strokeLinejoin="round" />
+                  <polyline
+                    points={points}
+                    fill="none"
+                    className={borrowed ? "plan-dash plan-borrowed" : "plan-dash"}
+                    strokeWidth={CAR_WIDTH + 6}
+                    strokeLinecap="butt"
+                    strokeLinejoin="round"
+                    strokeDasharray={borrowed ? "2 5" : "9 5"}
+                  />
+                </g>
+              );
+            })}
+        </g>
+      )}
+
+      {plan?.focus &&
+        geometries
+          .filter((g) => g.route.id === plan.focus)
+          .map((g) => (
+            <polyline
+              key="focus"
+              points={g.points.map((p) => p.join(",")).join(" ")}
+              fill="none"
+              className="plan-focus"
+              data-testid="plan-focus"
+              strokeWidth={CAR_WIDTH + 16}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pointerEvents="none"
             />
           ))}
 
@@ -128,6 +184,9 @@ export const MapContent = memo(function MapContent({ state, colorBlind, selected
               stroke={station ? "#ffffff" : INK}
               strokeWidth={station ? 3 : 2.5}
             />
+            {plan?.stations.includes(city.id) && (
+              <circle cx={x} cy={y} r={NODE_RADIUS + 5} fill="none" className="plan-station" data-testid={`plan-station-${city.id}`} pointerEvents="none" />
+            )}
             {station && <path d={`M${x - 5} ${y + 3} L${x} ${y - 5} L${x + 5} ${y + 3} Z`} fill="#ffffff" />}
             <text x={labels.get(city.id)!.x} y={labels.get(city.id)!.y} textAnchor={labels.get(city.id)!.anchor} className="map-label">
               {cityLabels.get(city.id) ?? city.name}

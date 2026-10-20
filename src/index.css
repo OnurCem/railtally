@@ -7,6 +7,8 @@
   --muted: #5d6a74;
   --border: #d6d0c2;
   --accent: #c47f0a;
+  --plan: #c2185b;
+  --plan-borrow: #6a1b9a;
   --accent-text: #ffffff;
   --danger: #b3261e;
   --warn-bg: #fff0c9;
@@ -28,6 +30,8 @@
     --muted: #a8b6bf;
     --border: #2f4a5b;
     --accent: #f2b134;
+    --plan: #ff5fa8;
+    --plan-borrow: #c792ff;
     --accent-text: #10202b;
     --danger: #ff8a80;
     --warn-bg: #4d3a0c;
@@ -47,6 +51,8 @@
   --muted: #a8b6bf;
   --border: #2f4a5b;
   --accent: #f2b134;
+  --plan: #ff5fa8;
+  --plan-borrow: #c792ff;
   --accent-text: #10202b;
   --danger: #ff8a80;
   --warn-bg: #4d3a0c;
@@ -149,6 +155,21 @@ button:disabled { opacity: 0.45; cursor: default; }
 /* promoted to its own layer only while moving: iOS Safari keeps a promoted layer at its old resolution (blurry when zoomed) */
 .map-content.moving { will-change: transform; }
 .map-bg { fill: var(--map-sea); }
+.plan-under { stroke: #ffffff; opacity: 0.75; }
+.plan-dash { stroke: var(--plan); }
+.plan-borrowed { stroke: var(--plan-borrow); }
+.plan-focus { stroke: var(--plan); opacity: 0.55; animation: plan-pulse 1.4s ease-in-out infinite; }
+.plan-station { stroke: var(--plan); stroke-width: 3.5; stroke-dasharray: 5 4; }
+@keyframes plan-pulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
+@media (prefers-reduced-motion: reduce) { .plan-focus { animation: none; } }
+.plan-note { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 4px; background: var(--warn-bg); color: var(--warn-text); border-radius: 12px; padding: 4px 4px 4px 12px; font-weight: 700; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
+.plan-note-text { flex: 1; text-align: left; background: none; border: 0; color: inherit; font: inherit; min-height: 44px; }
+.plan-change { justify-content: space-between; align-items: flex-start; }
+.plan-routes { list-style: none; padding: 0; margin: 0; }
+.plan-route { align-items: flex-start; padding-top: 8px; padding-bottom: 8px; }
+.plan-route-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.plan-route-text .muted { margin-left: 0; }
+.plan-order { font-weight: 800; min-width: 1.4em; text-align: center; }
 .map-selected { stroke: var(--accent); opacity: 0.6; }
 .map-label { font: 600 13px system-ui, sans-serif; fill: var(--map-label); paint-order: stroke; stroke: var(--map-halo); stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
 

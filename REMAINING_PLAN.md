@@ -138,7 +138,9 @@ Original plan:
 
 ---
 
-## 7. v3 — Strategy builder
+## 7. v3 — Strategy builder (done)
+
+**Built:** `src/game/strategy.ts` (`planStrategy`, `diffPlans`), `src/store/planStore.ts` (previous plan in memory only), `StrategySheet` (Menu → Strategy), a dashed map overlay (Menu → Show plan on map) and a train-budget factor in the ticket score (`trainPressure`). It is a heuristic: it reuses the per-ticket cheapest paths and station borrowing, not a full Steiner-tree optimum.
 
 - Combine my tickets into one network (Steiner-tree approximation), list the routes to claim, and the card colors
   needed with a suggested claim order (scarce and contested routes first).

@@ -6,6 +6,9 @@ import type { GameState } from "./state";
 
 /** Opportunity cost of one train, in points. Small: trains spent on a ticket path still score route points. */
 export const TRAIN_COST = 0.15;
+/** How much dearer a train gets when the plan uses most of the trains I have left (1 = no pressure). */
+export const trainPressure = (trains: number, available: number) =>
+  available <= 0 ? 1 : 1 + 4 * Math.min(1, trains / available) ** 2;
 /** Chance that a route nobody has claimed yet is still free when I need it (2 players, open twin lane). */
 const OPEN_TWIN_SUCCESS = 0.98;
 const SINGLE_ROUTE_SUCCESS = 0.95;
@@ -155,12 +158,12 @@ function scoreChoice(tickets: Ticket[], plans: (Path | null)[], ctx: PathContext
     stations,
     newStations,
     feasible,
-    score: expected - TRAIN_COST * trains - STATION_POINTS * newStations - (feasible ? 0 : 1000),
+    score: expected - TRAIN_COST * trainPressure(trains, trainsAvailable) * trains - STATION_POINTS * newStations - (feasible ? 0 : 1000),
   };
 }
 
 /** Picks the best plan per ticket for the whole network: start by building everything, then try borrowing where it helps. */
-function planNetwork(tickets: Ticket[], candidates: Path[][], ctx: PathContext, trainsAvailable: number) {
+export function planNetwork(tickets: Ticket[], candidates: Path[][], ctx: PathContext, trainsAvailable: number) {
   const choice: number[] = candidates.map((c) => (c.length ? 0 : -1));
   const plans = () => choice.map((k, i) => (k < 0 ? null : candidates[i][k]));
   let best = scoreChoice(tickets, plans(), ctx, trainsAvailable)!;

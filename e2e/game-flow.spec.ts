@@ -390,3 +390,78 @@ test("tickets: the start needs exactly 1 long + 3 short, drawing during the game
   await page.getByTestId("option-paris-wien").click();
   await expect(page.getByTestId("ticket-next")).toBeEnabled();
 });
+
+async function holdTickets(page: import("@playwright/test").Page, ids: string[]) {
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-tickets").click();
+  await page.getByTestId("mode-add").click();
+  for (const id of ids) await page.getByTestId(`option-${id}`).click();
+  await page.getByTestId("ticket-next").click();
+  await closeSheet(page);
+  await expect(page.getByTestId("tickets-sheet")).toBeHidden();
+}
+
+test("strategy: the plan lists routes in order, with trains and per-ticket status", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-strategy").click();
+  await expect(page.getByTestId("strategy-empty")).toBeVisible();
+  await closeSheet(page);
+
+  await holdTickets(page, ["athina-angora", "paris-wien"]);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-strategy").click();
+  await expect(page.getByTestId("strategy-sheet")).toBeVisible();
+  await expect(page.getByTestId("plan-trains")).toContainText("of 45 trains needed");
+  await expect(page.getByTestId("plan-trains")).toHaveAttribute("data-fits", "true");
+  await expect(page.getByTestId("plan-ticket-status-athina-angora")).toContainText("to place");
+  await expect(page.getByTestId("plan-ticket-status-paris-wien")).toContainText("to place");
+  expect(await page.getByTestId("plan-routes").locator("li").count()).toBeGreaterThan(1);
+  await expect(page.getByTestId("plan-cards")).toBeVisible();
+});
+
+test("strategy: toggle the overlay, highlight a route from the list, and the map stays tappable", async ({ page }) => {
+  await startGame(page);
+  await holdTickets(page, ["paris-wien"]);
+  await expect(page.getByTestId("plan-overlay")).toHaveCount(0);
+
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-strategy").click();
+  const first = page.locator('[data-testid^="plan-route-"]').first();
+  const routeId = (await first.getAttribute("data-testid"))!.replace("plan-route-", "");
+  await first.click();
+  await expect(first).toHaveAttribute("aria-pressed", "true");
+  await page.getByTestId("plan-show-map").click();
+  await expect(page.getByTestId("strategy-sheet")).toBeHidden();
+  await expect(page.getByTestId("plan-overlay")).toBeVisible(); // focusing a route turns the overlay on
+  await expect(page.getByTestId("plan-focus")).toHaveCount(1);
+  expect(await page.locator("[data-plan-route]").count()).toBeGreaterThan(0);
+
+  // a dashed outline never blocks a tap: the claim picker still opens on a planned route
+  await openRoute(page, routeId);
+  await page.keyboard.press("Escape");
+
+  await page.getByTestId("menu").click();
+  await expect(page.getByTestId("toggle-plan")).toHaveText("Hide plan on map");
+  await page.getByTestId("toggle-plan").click(); // switches the overlay off; the focus highlight stays
+  await closeSheet(page);
+  await expect(page.locator("[data-plan-route]")).toHaveCount(0);
+});
+
+test("strategy: tells me when an opponent takes a planned route", async ({ page }) => {
+  await startGame(page);
+  await holdTickets(page, ["paris-wien"]);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-strategy").click();
+  const first = page.locator('[data-testid^="plan-route-"]').first();
+  const routeId = (await first.getAttribute("data-testid"))!.replace("plan-route-", "");
+  await closeSheet(page);
+
+  await claimRoute(page, routeId, "p2");
+  await expect(page.getByTestId("plan-note")).toContainText("Plan changed");
+  await page.getByTestId("plan-note").getByRole("button").first().click();
+  await expect(page.getByTestId("plan-change")).toContainText("was taken");
+  await expect(page.getByTestId(`plan-route-${routeId}`)).toHaveCount(0);
+  await page.getByTestId("plan-change-dismiss").click();
+  await expect(page.getByTestId("plan-change")).toHaveCount(0);
+});

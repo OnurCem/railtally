@@ -84,7 +84,8 @@
     "removeStation": "Remove station",
     "hint": "Tap a route to claim it. Press and hold a city for a station.",
     "fit": "Fit map",
-    "tickets": "My tickets"
+    "tickets": "My tickets",
+    "strategy": "Strategy"
   },
   "score": {
     "title": "Score",
@@ -221,5 +222,41 @@
     "withStation": "with a station",
     "selectedStart": "{{long}} of 1 long, {{short}} of 3 short selected",
     "selectedShort": "{{n}} of {{max}} short tickets selected"
+  },
+  "strategy": {
+    "title": "Strategy",
+    "empty": "Add the tickets you hold under My tickets, and the plan appears here.",
+    "trains": "{{needed}} of {{left}} trains needed",
+    "shared_one": "{{count}} train saved by shared routes",
+    "shared_other": "{{count}} trains saved by shared routes",
+    "noFit": "This plan needs more trains than you have left.",
+    "dropHint": "Giving up {{ticket}} saves the most.",
+    "tight": "This plan uses {{pct}}% of your remaining trains. There is little room for a detour.",
+    "overlayShow": "Show plan on map",
+    "overlayHide": "Hide plan on map",
+    "changed": "Plan changed: {{routes}} was taken.",
+    "changedAdded": "New route in the plan: {{routes}}",
+    "changedStation": "Station suggested in: {{cities}}",
+    "changedBlocked": "No way left for: {{tickets}}",
+    "ticketsTitle": "Tickets",
+    "routesTitle": "Routes to claim, in order",
+    "orderHint": "Tap a route to highlight it on the map. Routes that are scarce or contested come first.",
+    "noRoutes": "Nothing left to claim. Everything is built or borrowed through stations.",
+    "cardsFor": "{{n}} × {{color}}",
+    "anyColor": "any one color",
+    "anyCards": "{{n}} of any one color per route",
+    "tunnelExtra": "tunnel: up to 3 extra cards",
+    "locomotives_one": "{{count}} locomotive",
+    "locomotives_other": "{{count}} locomotives",
+    "cardsTitle": "Cards to collect",
+    "tunnelWarning": "{{n}} tunnel(s) in the plan: keep spare cards, up to 3 extra for each.",
+    "reason": {
+      "noAlternative": "no other way if it is taken",
+      "costlyDetour": "expensive detour if it is taken",
+      "shared": "serves several tickets",
+      "crowded": "crowded area"
+    },
+    "note": "This is a heuristic plan, not a guaranteed best. It is recomputed from the map after every change. Routes you own count as done; each station borrows one opponent route.",
+    "showOnMap": "Show on map"
   }
 }

@@ -84,7 +84,8 @@
     "removeStation": "İstasyonu kaldır",
     "hint": "Bir hattı almak için dokun. İstasyon için şehre basılı tut.",
     "fit": "Haritayı sığdır",
-    "tickets": "Biletlerim"
+    "tickets": "Biletlerim",
+    "strategy": "Strateji"
   },
   "score": {
     "title": "Puan",
@@ -221,5 +222,41 @@
     "withStation": "istasyonla",
     "selectedStart": "1 uzun biletten {{long}}, 3 kısa biletten {{short}} seçildi",
     "selectedShort": "{{n}} / {{max}} kısa bilet seçildi"
+  },
+  "strategy": {
+    "title": "Strateji",
+    "empty": "Elindeki biletleri Biletlerim bölümüne ekle, plan burada görünür.",
+    "trains": "{{needed}} / {{left}} tren gerekli",
+    "shared_one": "Ortak rotalarla {{count}} tren tasarrufu",
+    "shared_other": "Ortak rotalarla {{count}} tren tasarrufu",
+    "noFit": "Bu plan kalan trenlerinden fazlasını gerektiriyor.",
+    "dropHint": "{{ticket}} biletinden vazgeçmek en çok treni kurtarır.",
+    "tight": "Bu plan kalan trenlerinin %{{pct}} kadarını kullanıyor. Yan yola sapmaya pek yer yok.",
+    "overlayShow": "Planı haritada göster",
+    "overlayHide": "Planı haritadan gizle",
+    "changed": "Plan değişti: {{routes}} rotası alındı.",
+    "changedAdded": "Plana yeni rota: {{routes}}",
+    "changedStation": "İstasyon önerisi: {{cities}}",
+    "changedBlocked": "Yol kalmadı: {{tickets}}",
+    "ticketsTitle": "Biletler",
+    "routesTitle": "Alınacak rotalar, sırayla",
+    "orderHint": "Haritada vurgulamak için bir rotaya dokun. Az bulunan veya kapılma riski yüksek rotalar öne gelir.",
+    "noRoutes": "Alınacak rota kalmadı. Her şey kuruldu veya istasyonlarla ödünç alındı.",
+    "cardsFor": "{{n}} × {{color}}",
+    "anyColor": "herhangi tek renk",
+    "anyCards": "Her rota için herhangi tek renkten {{n}} kart",
+    "tunnelExtra": "tünel: en fazla 3 ek kart",
+    "locomotives_one": "{{count}} lokomotif",
+    "locomotives_other": "{{count}} lokomotif",
+    "cardsTitle": "Toplanacak kartlar",
+    "tunnelWarning": "Planda {{n}} tünel var: her biri için en fazla 3 yedek kart tut.",
+    "reason": {
+      "noAlternative": "alınırsa başka yol yok",
+      "costlyDetour": "alınırsa pahalı dolambaç",
+      "shared": "birkaç bilete hizmet ediyor",
+      "crowded": "kalabalık bölge"
+    },
+    "note": "Bu bir sezgisel plandır, en iyisi olduğu garanti değildir. Haritada her değişiklikten sonra yeniden hesaplanır. Sahip olduğun rotalar tamamlanmış sayılır; her istasyon bir rakip rotasını ödünç alır.",
+    "showOnMap": "Haritada göster"
   }
 }

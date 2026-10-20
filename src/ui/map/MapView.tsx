@@ -3,7 +3,7 @@ import { cities } from "../../data/cities";
 import { MAP_HEIGHT, MAP_WIDTH } from "../../data/projection";
 import type { GameState } from "../../game/state";
 import { cityNear, routesNear, type Point } from "./geometry";
-import { MapContent } from "./MapContent";
+import { MapContent, type PlanOverlay } from "./MapContent";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 10;
@@ -32,6 +32,7 @@ interface Props {
   rotated: boolean;
   colorBlind: boolean;
   selectedRouteId: string | null;
+  plan: PlanOverlay | null;
   /** change this value to fit the map to the screen height again */
   resetSignal: number;
   onRoutesTap: (routeIds: string[]) => void;
@@ -40,7 +41,7 @@ interface Props {
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSignal, onRoutesTap, onCityLongPress }: Props) {
+export function MapView({ state, rotated, colorBlind, selectedRouteId, plan, resetSignal, onRoutesTap, onCityLongPress }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<Size>({ w: 0, h: 0 });
   const [view, setView] = useState<View>({ k: 1, px: 0, py: 0 });
@@ -319,6 +320,7 @@ export function MapView({ state, rotated, colorBlind, selectedRouteId, resetSign
             flashRouteIds={flash}
             showMarks={view.k * base >= MARKS_SCALE}
             cityLabels={cityLabels}
+            plan={plan}
           />
         </div>
       )}
