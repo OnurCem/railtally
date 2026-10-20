@@ -423,10 +423,14 @@ test("strategy: the plan lists routes in order, with trains and per-ticket statu
 test("strategy: toggle the overlay, highlight a route from the list, and the map stays tappable", async ({ page }) => {
   await startGame(page);
   await holdTickets(page, ["paris-wien"]);
+  await expect(page.getByTestId("plan-overlay")).toBeVisible(); // on by default once I hold tickets
+  await page.getByTestId("fab-plan").click();
   await expect(page.getByTestId("plan-overlay")).toHaveCount(0);
+  await page.getByTestId("fab-plan").click();
+  await expect(page.getByTestId("plan-overlay")).toBeVisible();
 
-  await page.getByTestId("menu").click();
-  await page.getByTestId("open-strategy").click();
+  await page.getByTestId("fab-strategy").click();
+  await expect(page.getByTestId("strategy-sheet")).toBeVisible();
   const first = page.locator('[data-testid^="plan-route-"]').first();
   const routeId = (await first.getAttribute("data-testid"))!.replace("plan-route-", "");
   await first.click();

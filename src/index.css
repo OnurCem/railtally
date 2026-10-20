@@ -164,6 +164,9 @@ button:disabled { opacity: 0.45; cursor: default; }
 @media (prefers-reduced-motion: reduce) { .plan-focus { animation: none; } }
 .plan-note { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 4px; background: var(--warn-bg); color: var(--warn-text); border-radius: 12px; padding: 4px 4px 4px 12px; font-weight: 700; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
 .plan-note-text { flex: 1; text-align: left; background: none; border: 0; color: inherit; font: inherit; min-height: 44px; }
+.map-fabs { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; }
+.fab { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 1.2rem; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); }
+.fab.on { background: var(--plan); color: #fff; border-color: var(--plan); }
 .plan-change { justify-content: space-between; align-items: flex-start; }
 .plan-routes { list-style: none; padding: 0; margin: 0; }
 .plan-route { align-items: flex-start; padding-top: 8px; padding-bottom: 8px; }

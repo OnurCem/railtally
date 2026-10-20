@@ -34,7 +34,7 @@ export function MapScreen() {
   const [panel, setPanel] = useState<Panel>(null);
   const [toast, setToast] = useState<string | null>(null);
 
-  const [planOn, setPlanOn] = useState(false);
+  const [planOn, setPlanOn] = useState(true);
   const [focusRoute, setFocusRoute] = useState<string | null>(null);
   const plan = useMemo(() => planStrategy(state), [state]);
   const { change, observe, dismiss } = usePlan();
@@ -132,6 +132,23 @@ export function MapScreen() {
           onRoutesTap={onRoutesTap}
           onCityLongPress={onCityLongPress}
         />
+        {plan && (
+          <div className="map-fabs">
+            <button
+              className={`fab${planOn ? " on" : ""}`}
+              role="switch"
+              aria-checked={planOn}
+              aria-label={planOn ? t("strategy.overlayHide") : t("strategy.overlayShow")}
+              onClick={() => setPlanOn((on) => !on)}
+              data-testid="fab-plan"
+            >
+              <span aria-hidden="true">◫</span>
+            </button>
+            <button className="fab" aria-label={t("game.strategy")} onClick={() => setPanel("strategy")} data-testid="fab-strategy">
+              <span aria-hidden="true">⚑</span>
+            </button>
+          </div>
+        )}
         {changeText && !readOnly && panel !== "strategy" && (
           <div className="plan-note" role="status" data-testid="plan-note">
             <button className="plan-note-text" onClick={() => setPanel("strategy")}>
