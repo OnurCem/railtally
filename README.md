@@ -36,5 +36,19 @@ npm run e2e        # end-to-end tests on a phone viewport
 
 ## Deploy
 
-The output of `npm run build` is a static site in `dist/`. Host it on any static host with HTTPS (Cloudflare Pages,
-Netlify, GitHub Pages) — HTTPS is required for installing the PWA and for the service worker.
+The output of `npm run build` is a static site in `dist/`; it needs HTTPS to install as a PWA and to run the service worker.
+
+**GitHub Pages** (https://onurcem.github.io/railtally/), without a workflow file of our own:
+
+```bash
+scripts/deploy-pages.sh
+```
+
+It builds with `BASE_PATH=/railtally/` (the Vite `base`; PWA `start_url`, `scope` and icons follow it), then pushes
+`dist/` plus `.nojekyll` to the `gh-pages` branch as a single commit with plain git. Pages was enabled once with
+`gh api -X POST repos/OnurCem/railtally/pages -f 'source[branch]=gh-pages' -f 'source[path]=/'`.
+Every publish triggers GitHub's built-in "pages build and deployment" run (uses Actions minutes), so deploy
+deliberately. The working tree must be clean. Phones pick up a new version on their next online visit.
+
+For a custom domain at the site root, build with `BASE_PATH=/` and add a `CNAME` file to `public/`.
+`npm run e2e` tests the app under `/railtally/`; use `BASE_PATH=/ npm run e2e` to test at the root.

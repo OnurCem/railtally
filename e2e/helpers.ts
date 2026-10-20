@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 
 export async function startGame(page: Page, players = 3) {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByTestId("new-game").click();
   await page.getByTestId(`count-${players}`).click();
   await page.getByTestId("start-game").click();

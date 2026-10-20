@@ -3,7 +3,11 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+// GitHub Pages serves a project site from a sub-path: build with BASE_PATH=/railtally/
+const base = process.env.BASE_PATH ?? "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({

@@ -8,7 +8,7 @@ test.beforeEach(({ page }) => {
 });
 
 test("home screen loads", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.getByRole("heading", { name: "Railtally" })).toBeVisible();
   await expect(page.getByText("not affiliated with Days of Wonder")).toBeVisible();
 });
@@ -126,7 +126,7 @@ test("the last-round banner appears when a player has 2 or fewer trains (via imp
   const file = testInfo.outputPath("backup.json");
   writeFileSync(file, JSON.stringify({ app: "railtally", version: 1, exportedAt: Date.now(), games: [{ gameId, actions }] }));
 
-  await page.goto("/");
+  await page.goto("./");
   await page.getByTestId("import-file").setInputFiles(file);
   await expect(page.getByText("1 game imported.")).toBeVisible();
   await page.getByTestId("game-card").getByRole("button").first().click();
@@ -148,7 +148,7 @@ test("pinch with two fingers zooms the map", async ({ page, context }) => {
 });
 
 test("settings: Turkish, dark theme and color-blind mode", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByTestId("open-settings").click();
   const sheet = page.getByTestId("settings-sheet");
   await sheet.getByLabel("Theme").selectOption("dark");
@@ -163,7 +163,7 @@ test("settings: Turkish, dark theme and color-blind mode", async ({ page }) => {
 });
 
 test("works offline after the first visit", async ({ page, context }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -178,7 +178,7 @@ test("works offline after the first visit", async ({ page, context }) => {
 });
 
 test("the data check screen lists cities and tickets", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByTestId("open-settings").click();
   await page.getByTestId("open-data-check").click();
   await expect(page.getByTestId("data-check")).toBeVisible();
@@ -187,7 +187,7 @@ test("the data check screen lists cities and tickets", async ({ page }) => {
   await expect(page.getByTestId("data-tickets").locator("tbody tr")).toHaveCount(46);
   await page.getByTestId("data-back").click();
   await expect(page.getByTestId("new-game")).toBeVisible();
-  await page.goto("/#data");
+  await page.goto("./#data");
   await expect(page.getByTestId("data-check")).toBeVisible();
 });
 
@@ -225,7 +225,7 @@ test("the Android back button goes summary → map → home", async ({ page }) =
 });
 
 test("back from the new-game screen and from the data check", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("./");
   await page.getByTestId("new-game").click();
   await expect(page.getByTestId("start-game")).toBeVisible();
   await page.goBack();
