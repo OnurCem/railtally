@@ -23,6 +23,8 @@ export type ActionBody =
   | { type: "STATION_PLACED"; cityId: CityId; playerId: string }
   | { type: "STATION_REMOVED"; cityId: CityId; playerId: string }
   | { type: "TICKET_POINTS_SET"; playerId: string; points: number }
+  | { type: "TICKET_ADDED"; ticketId: string }
+  | { type: "TICKET_REMOVED"; ticketId: string }
   | { type: "EXPRESS_OVERRIDE"; winners: string[] | null }
   | { type: "GAME_ENDED" };
 
@@ -35,5 +37,5 @@ export function makeAction(body: ActionBody, actorId = "local", at = Date.now())
 }
 
 /** Never synced to other players in multiplayer (v4); they stay on this device. */
-export const PRIVATE_ACTIONS: Action["type"][] = ["TICKET_POINTS_SET"];
+export const PRIVATE_ACTIONS: Action["type"][] = ["TICKET_POINTS_SET", "TICKET_ADDED", "TICKET_REMOVED"];
 export const isPrivateAction = (a: Pick<Action, "type">) => PRIVATE_ACTIONS.includes(a.type);

@@ -1,4 +1,5 @@
 import { PLAYER_COLORS, type Action } from "./actions";
+import { ticketById } from "../data/lookup";
 import { claimError, RuleError, stationPlaceError } from "./rules";
 import { initialState, type GameState } from "./state";
 
@@ -52,6 +53,17 @@ export function reduce(state: GameState, action: Action): GameState {
       if (!hasPlayer(state, action.playerId)) throw new RuleError("unknownPlayer");
       if (!Number.isInteger(action.points)) throw new RuleError("invalidPoints");
       return { ...state, ticketPoints: { ...state.ticketPoints, [action.playerId]: action.points } };
+    }
+    case "TICKET_ADDED": {
+      if (state.ended) throw new RuleError("gameEnded");
+      if (!ticketById.has(action.ticketId)) throw new RuleError("unknownTicket");
+      if (state.myTickets.includes(action.ticketId)) throw new RuleError("ticketHeld");
+      return { ...state, myTickets: [...state.myTickets, action.ticketId] };
+    }
+    case "TICKET_REMOVED": {
+      if (state.ended) throw new RuleError("gameEnded");
+      if (!state.myTickets.includes(action.ticketId)) throw new RuleError("ticketMissing");
+      return { ...state, myTickets: state.myTickets.filter((id) => id !== action.ticketId) };
     }
     case "EXPRESS_OVERRIDE": {
       if (action.winners && !action.winners.every((id) => hasPlayer(state, id))) {

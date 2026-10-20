@@ -323,3 +323,47 @@ test("settings show the privacy note", async ({ page }) => {
   await page.getByTestId("open-settings").click();
   await expect(page.getByTestId("about-privacy")).toContainText("Everything stays on this device");
 });
+
+test("tickets: pick the 4 dealt tickets, get a recommendation and keep it", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-tickets").click();
+  await expect(page.getByTestId("tickets-sheet")).toBeVisible();
+  await page.getByTestId("mode-start").click();
+
+  await page.getByTestId("ticket-search").fill("copenhagen"); // no match by English name
+  await expect(page.getByTestId("ticket-options").locator("li")).toHaveCount(0);
+  await page.getByTestId("ticket-search").fill("kobenhavn");
+  await page.getByTestId("option-kobenhavn-erzurum").click();
+  await page.getByTestId("ticket-search").fill("");
+  for (const id of ["athina-angora", "frankfurt-kobenhavn", "paris-wien"]) await page.getByTestId(`option-${id}`).click();
+  await expect(page.getByTestId("selected-count")).toHaveText("4 of 4 selected");
+  await expect(page.getByTestId("option-berlin-bucuresti")).toBeDisabled();
+  await page.getByTestId("ticket-next").click();
+
+  await expect(page.getByTestId("recommendation")).toBeVisible();
+  await expect(page.getByTestId("network")).toContainText("trains to place");
+  await expect(page.locator('[data-testid^="verdict-"]')).toHaveCount(4);
+  const kept = await page.locator('[data-testid^="verdict-"][data-keep="true"]').count();
+  expect(kept).toBeGreaterThanOrEqual(2); // the rules: keep at least 2 of the first 4
+  await expect(page.getByTestId("verdict-athina-angora")).toHaveAttribute("data-keep", "true");
+  await page.getByTestId("keep-these").click();
+
+  await expect(page.getByTestId("held-tickets").locator("li")).toHaveCount(kept);
+  await expect(page.getByTestId("held-athina-angora")).toBeVisible();
+  await expect(page.getByTestId("status-athina-angora")).toContainText("to place");
+});
+
+test("tickets: add a ticket I already hold and close the dialogs", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-tickets").click();
+  await page.getByTestId("mode-add").click();
+  await page.getByTestId("option-budapest-sofia").click();
+  await page.getByTestId("ticket-next").click();
+  await expect(page.getByTestId("status-budapest-sofia")).toContainText("to place");
+  await page.keyboard.press("Escape");
+  await expect(page.getByTestId("tickets-sheet")).toBeHidden();
+  await page.waitForTimeout(100);
+  await expect(page.getByTestId("menu-sheet")).toBeHidden();
+});

@@ -5,6 +5,7 @@ import { isLastRound } from "../../game/selectors";
 import { canUndo, useGame } from "../../store/gameStore";
 import { useSettings } from "../../store/settingsStore";
 import { ScoreSheet } from "../components/ScoreSheet";
+import { TicketsSheet } from "../components/TicketsSheet";
 import { SettingsSheet } from "../components/SettingsSheet";
 import { Sheet } from "../components/Sheet";
 import { useWakeLock } from "../hooks/useWakeLock";
@@ -12,7 +13,7 @@ import { ClaimPicker } from "../map/ClaimPicker";
 import { MapView } from "../map/MapView";
 import { StationSheet } from "../map/StationSheet";
 
-type Panel = "score" | "menu" | "settings" | null;
+type Panel = "score" | "menu" | "settings" | "tickets" | null;
 
 export function MapScreen() {
   const { t } = useTranslation();
@@ -149,6 +150,9 @@ export function MapScreen() {
       {cityId && !readOnly && <StationSheet state={state} cityId={cityId} onAction={apply} onClose={closePickers} />}
       {panel === "score" && <ScoreSheet state={state} onClose={() => setPanel(null)} />}
       {panel === "settings" && <SettingsSheet onClose={() => setPanel(null)} />}
+      {panel === "tickets" && (
+        <TicketsSheet state={state} readOnly={readOnly} onAction={(body) => void dispatch(body)} onClose={() => setPanel(null)} />
+      )}
       {panel === "menu" && (
         <Sheet title={t("game.menu")} onClose={() => setPanel(null)} testId="menu-sheet">
           <p className="muted">{t("game.hint")}</p>
@@ -162,6 +166,11 @@ export function MapScreen() {
                 }}
               >
                 {t("game.resetView")}
+              </button>
+            </li>
+            <li>
+              <button className="row-button" onClick={() => setPanel("tickets")} data-testid="open-tickets">
+                {t("game.tickets")}
               </button>
             </li>
             <li>

@@ -22,7 +22,7 @@ describe("translations", () => {
   });
   it("translates every rule error code", () => {
     const codes: RuleCode[] = [
-      "gameEnded", "unknownRoute", "unknownCity", "unknownPlayer", "routeTaken", "routeNotClaimed", "noTrains",
+      "gameEnded", "unknownRoute", "unknownCity", "unknownPlayer", "unknownTicket", "ticketHeld", "ticketMissing", "routeTaken", "routeNotClaimed", "noTrains",
       "twinOwn", "twinBlocked", "stationTaken", "stationMissing", "noStations", "colorTaken", "tooManyPlayers",
       "tooManyMe", "invalidPlayerCount", "invalidPoints", "gameExists", "noGame",
     ];

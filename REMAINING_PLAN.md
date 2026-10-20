@@ -3,6 +3,10 @@
 Status of v1: all milestones of `IMPLEMENTATION_PLAN.md` are built except **Milestone 7 (release)**. This plan covers
 what is left, in the order I recommend. "You" = needs the owner; "Me" = can be done in a coding session.
 
+> **Progress (2026-10-20):** steps 1–5 are done (data verified against the board, phone polish, GitHub Pages, device
+> tests on a Galaxy S24+ and an iPhone simulator, MIT license and privacy notes). Step 6 core is built (see below);
+> camera scanning of ticket cards is the next addition.
+
 ## Recommended order
 
 | # | Step | Who | Effort | Why in this position |
@@ -105,6 +109,18 @@ Send findings as a list; I fix them in one batch and extend the e2e tests where 
 ---
 
 ## 6. v2 — Ticket chooser (private to each player)
+
+**Rules from the Turkish rule sheet.** At the start each player gets 1 long + 3 regular tickets and keeps at least 2
+(discards go back to the box). During the game a ticket action draws 3 regular tickets: keep at least 1, the rest go to
+the bottom of the pile. A completed ticket adds its points, an incomplete one subtracts them. Stations let you borrow one
+opponent route each (not modelled yet).
+
+**Built:** `src/game/paths.ts` (Dijkstra with blocked routes, free own routes, tunnel/ferry penalties),
+`src/game/tickets.ts` (success estimate, option ranking, explanations), `TicketsSheet` (Menu → My tickets).
+**Next:** camera scan of ticket cards (on-device OCR, matched against the 46 known city pairs, user confirms), and
+station-aware paths.
+
+Original plan:
 
 1. **Ticket picker UI:** choose my tickets from the list (search by city); stored as a *private* action
    (`TICKET_ADDED`/`TICKET_REMOVED`, listed in `PRIVATE_ACTIONS` so v4 never syncs them).

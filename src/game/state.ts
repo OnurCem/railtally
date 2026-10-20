@@ -21,6 +21,8 @@ export interface GameState {
   ticketPoints: Record<string, number>;
   /** playerIds chosen manually as European Express winners, or null for automatic */
   expressOverride: string[] | null;
+  /** ticket ids held by me (private; never synced) */
+  myTickets: string[];
   ended: boolean;
   endedAt: number | null;
 }
@@ -34,6 +36,7 @@ export const initialState: GameState = {
   stations: {},
   ticketPoints: {},
   expressOverride: null,
+  myTickets: [],
   ended: false,
   endedAt: null,
 };

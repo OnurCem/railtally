@@ -83,7 +83,8 @@
     "stationOwner": "Station of {{name}}",
     "removeStation": "Remove station",
     "hint": "Tap a route to claim it. Press and hold a city for a station.",
-    "fit": "Fit map"
+    "fit": "Fit map",
+    "tickets": "My tickets"
   },
   "score": {
     "title": "Score",
@@ -146,7 +147,10 @@
     "invalidPlayerCount": "Choose 2 to 5 players.",
     "invalidPoints": "Enter a whole number.",
     "gameExists": "A game already exists.",
-    "noGame": "No game is open."
+    "noGame": "No game is open.",
+    "unknownTicket": "Unknown ticket.",
+    "ticketHeld": "You already have this ticket.",
+    "ticketMissing": "You do not have this ticket."
   },
   "dataCheck": {
     "title": "Data check",
@@ -167,5 +171,47 @@
     "double": "double route",
     "gray": "Gray",
     "open": "Data check (compare with board)"
+  },
+  "tickets": {
+    "title": "My tickets",
+    "empty": "You have no tickets yet. Add the ones you hold.",
+    "points": "{{n}} pts",
+    "long": "long",
+    "done": "Complete",
+    "blocked": "Blocked by opponents",
+    "toPlace_one": "{{count}} train to place",
+    "toPlace_other": "{{count}} trains to place",
+    "remove": "Remove ticket",
+    "modeStart": "Start of game: choose from my 4 tickets",
+    "modeDraw": "I drew 3 tickets: choose which to keep",
+    "modeAdd": "Add tickets I already have",
+    "hint_start": "Select the 4 tickets you were dealt (1 long and 3 regular). You must keep at least 2.",
+    "hint_draw": "Select the 3 tickets you drew. You must keep at least 1.",
+    "hint_add": "Select the tickets you hold.",
+    "search": "Search city",
+    "selected": "{{n}} of {{max}} selected",
+    "selectedFree": "{{n}} selected",
+    "recommend": "Recommend",
+    "add": "Add selected",
+    "mustKeep_one": "You must keep at least {{count}} ticket.",
+    "mustKeep_other": "You must keep at least {{count}} tickets.",
+    "best": "Best choice",
+    "alternative": "Choice {{n}}",
+    "keep": "Keep",
+    "giveBack": "Give back",
+    "facts": "{{trains}} trains · {{pct}}% chance",
+    "network": "Network: {{trains}} trains to place ({{shared}} shared between tickets) · {{points}} points if all are completed · {{chance}}% chance to complete all.",
+    "tooManyTrains": "This needs more trains than you have left.",
+    "apply": "Keep these",
+    "otherChoices": "Other choices",
+    "altFacts": "{{trains}} trains · {{points}} pts",
+    "note": "This is an estimate. It avoids routes opponents have claimed on your map and counts routes you own as free. Stations are not considered yet.",
+    "why": {
+      "keepShared": "Shares routes with another ticket you keep.",
+      "keepEfficient": "Good points for the trains it needs.",
+      "dropCostly": "Needs many trains for its points.",
+      "dropRisky": "Likely to be blocked before you finish it.",
+      "dropBlocked": "Opponents already block every connection."
+    }
   }
 }

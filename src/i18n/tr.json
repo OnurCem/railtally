@@ -83,7 +83,8 @@
     "stationOwner": "{{name}} oyuncusunun istasyonu",
     "removeStation": "İstasyonu kaldır",
     "hint": "Bir hattı almak için dokun. İstasyon için şehre basılı tut.",
-    "fit": "Haritayı sığdır"
+    "fit": "Haritayı sığdır",
+    "tickets": "Biletlerim"
   },
   "score": {
     "title": "Puan",
@@ -146,7 +147,10 @@
     "invalidPlayerCount": "2 ile 5 arasında oyuncu seç.",
     "invalidPoints": "Tam sayı gir.",
     "gameExists": "Zaten bir oyun var.",
-    "noGame": "Açık oyun yok."
+    "noGame": "Açık oyun yok.",
+    "unknownTicket": "Bilinmeyen bilet.",
+    "ticketHeld": "Bu bilet zaten sende.",
+    "ticketMissing": "Bu bilet sende değil."
   },
   "dataCheck": {
     "title": "Veri kontrolü",
@@ -167,5 +171,47 @@
     "double": "çift rota",
     "gray": "Gri",
     "open": "Veri kontrolü (tahtayla karşılaştır)"
+  },
+  "tickets": {
+    "title": "Biletlerim",
+    "empty": "Henüz biletin yok. Elindeki biletleri ekle.",
+    "points": "{{n}} puan",
+    "long": "uzun",
+    "done": "Tamamlandı",
+    "blocked": "Rakipler tarafından engellendi",
+    "toPlace_one": "{{count}} tren koyulacak",
+    "toPlace_other": "{{count}} tren koyulacak",
+    "remove": "Bileti kaldır",
+    "modeStart": "Oyun başı: 4 biletimden seç",
+    "modeDraw": "3 bilet çektim: hangilerini tutacağımı seç",
+    "modeAdd": "Elimdeki biletleri ekle",
+    "hint_start": "Dağıtılan 4 bileti seç (1 uzun, 3 normal). En az 2 tanesini tutmalısın.",
+    "hint_draw": "Çektiğin 3 bileti seç. En az 1 tanesini tutmalısın.",
+    "hint_add": "Elindeki biletleri seç.",
+    "search": "Şehir ara",
+    "selected": "{{n}} / {{max}} seçildi",
+    "selectedFree": "{{n}} seçildi",
+    "recommend": "Öner",
+    "add": "Seçilenleri ekle",
+    "mustKeep_one": "En az {{count}} bilet tutmalısın.",
+    "mustKeep_other": "En az {{count}} bilet tutmalısın.",
+    "best": "En iyi seçim",
+    "alternative": "{{n}}. seçenek",
+    "keep": "Tut",
+    "giveBack": "Geri ver",
+    "facts": "{{trains}} tren · %{{pct}} başarı şansı",
+    "network": "Ağ: {{trains}} tren koyulacak (biletler arasında {{shared}} ortak) · hepsi tamamlanırsa {{points}} puan · hepsini tamamlama şansı %{{chance}}.",
+    "tooManyTrains": "Bunun için kalan trenlerinden fazlası gerekiyor.",
+    "apply": "Bunları tut",
+    "otherChoices": "Diğer seçenekler",
+    "altFacts": "{{trains}} tren · {{points}} puan",
+    "note": "Bu bir tahmindir. Rakiplerin haritada aldığı hatlardan kaçınır, senin hatlarını bedava sayar. İstasyonlar henüz hesaba katılmaz.",
+    "why": {
+      "keepShared": "Tuttuğun başka bir biletle ortak hatları var.",
+      "keepEfficient": "Gerektirdiği trene göre iyi puan.",
+      "dropCostly": "Puanına göre çok tren gerektiriyor.",
+      "dropRisky": "Tamamlamadan önce engellenme ihtimali yüksek.",
+      "dropBlocked": "Rakipler tüm bağlantıları zaten engelledi."
+    }
   }
 }
