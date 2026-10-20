@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Rotaray",
+    "name": "Railtally",
     "tagline": "Tren masa oyunu yardımcısı",
     "disclaimer": "Hayranlar tarafından yapılmış resmi olmayan yardımcı uygulama; Days of Wonder ile bağlantısı yoktur."
   },
@@ -33,7 +33,7 @@
     "importDone_other": "{{count}} oyun içe aktarıldı.",
     "importSkipped_one": "{{count}} oyun atlandı.",
     "importSkipped_other": "{{count}} oyun atlandı.",
-    "importFailed": "Bu dosya bir Rotaray yedeği değil.",
+    "importFailed": "Bu dosya bir Railtally yedeği değil.",
     "winner": "Kazanan",
     "players": "{{count}} oyuncu"
   },

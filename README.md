@@ -1,4 +1,4 @@
-# Rotaray
+# Railtally
 
 A personal companion web app (PWA) for a European train-route board game. Each player uses it on their own phone:
 tap routes to mark who claimed them, track trains, stations and score, rotate the map for the other side of the table,

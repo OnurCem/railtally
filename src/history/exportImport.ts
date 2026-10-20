@@ -3,8 +3,11 @@ import type { Action } from "../game/actions";
 import { replay } from "../game/reducer";
 import { GAME_KEY_PREFIX, gameKey } from "../sync/LocalAdapter";
 
+/** Backups made before the app was renamed say "rotaray"; they are still accepted. */
+const ACCEPTED_APPS: string[] = ["railtally", "rotaray"];
+
 interface BackupFile {
-  app: "rotaray";
+  app: "railtally";
   version: 1;
   exportedAt: number;
   games: { gameId: string; actions: Action[] }[];
@@ -15,7 +18,7 @@ export async function exportAll(): Promise<string> {
   const games = all
     .filter(([key]) => typeof key === "string" && key.startsWith(GAME_KEY_PREFIX))
     .map(([key, actions]) => ({ gameId: (key as string).slice(GAME_KEY_PREFIX.length), actions }));
-  const file: BackupFile = { app: "rotaray", version: 1, exportedAt: Date.now(), games };
+  const file: BackupFile = { app: "railtally", version: 1, exportedAt: Date.now(), games };
   return JSON.stringify(file, null, 2);
 }
 
@@ -33,7 +36,7 @@ export async function importAll(json: string): Promise<ImportResult> {
     throw new Error("invalidFile");
   }
   const file = data as Partial<BackupFile>;
-  if (file?.app !== "rotaray" || file.version !== 1 || !Array.isArray(file.games)) {
+  if (!file?.app || !ACCEPTED_APPS.includes(file.app) || file.version !== 1 || !Array.isArray(file.games)) {
     throw new Error("invalidFile");
   }
   let imported = 0;

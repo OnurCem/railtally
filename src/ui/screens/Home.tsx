@@ -66,7 +66,7 @@ export function Home() {
     const blob = new Blob([await exportAll()], { type: "application/json" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `rotaray-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `railtally-${new Date().toISOString().slice(0, 10)}.json`;
     link.click();
     URL.revokeObjectURL(link.href);
   };

@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Rotaray",
+    "name": "Railtally",
     "tagline": "Train board game companion",
     "disclaimer": "Unofficial fan-made companion app, not affiliated with Days of Wonder."
   },
@@ -33,7 +33,7 @@
     "importDone_other": "{{count}} games imported.",
     "importSkipped_one": "{{count}} game was skipped.",
     "importSkipped_other": "{{count}} games were skipped.",
-    "importFailed": "This file is not a Rotaray backup.",
+    "importFailed": "This file is not a Railtally backup.",
     "winner": "Winner",
     "players": "{{count}} players"
   },

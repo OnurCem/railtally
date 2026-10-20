@@ -9,7 +9,7 @@ test.beforeEach(({ page }) => {
 
 test("home screen loads", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Rotaray" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Railtally" })).toBeVisible();
   await expect(page.getByText("not affiliated with Days of Wonder")).toBeVisible();
 });
 
@@ -121,7 +121,7 @@ test("the last-round banner appears when a player has 2 or fewer trains (via imp
     ...claims.map((routeId) => ({ ...meta("ROUTE_CLAIMED"), routeId, playerId: "p2" })),
   ];
   const file = testInfo.outputPath("backup.json");
-  writeFileSync(file, JSON.stringify({ app: "rotaray", version: 1, exportedAt: Date.now(), games: [{ gameId, actions }] }));
+  writeFileSync(file, JSON.stringify({ app: "railtally", version: 1, exportedAt: Date.now(), games: [{ gameId, actions }] }));
 
   await page.goto("/");
   await page.getByTestId("import-file").setInputFiles(file);
@@ -167,7 +167,7 @@ test("works offline after the first visit", async ({ page, context }) => {
   await page.reload(); // now controlled by the service worker
   await context.setOffline(true);
   await page.reload();
-  await expect(page.getByRole("heading", { name: "Rotaray" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Railtally" })).toBeVisible();
   await page.getByTestId("new-game").click();
   await page.getByTestId("start-game").click();
   await expect(page.getByTestId("map-viewport")).toBeVisible();

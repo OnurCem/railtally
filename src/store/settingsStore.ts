@@ -8,12 +8,21 @@ export interface Settings {
   colorBlind: boolean;
 }
 
-const STORAGE_KEY = "rotaray:settings";
+const STORAGE_KEY = "railtally:settings";
+/** Key used before the app was renamed; its value is copied over once. */
+const LEGACY_STORAGE_KEY = "rotaray:settings";
 export const defaultSettings: Settings = { language: "auto", theme: "auto", largeText: false, colorBlind: false };
 
 export function loadSettings(): Settings {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    let raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (raw) {
+        localStorage.setItem(STORAGE_KEY, raw);
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+      }
+    }
     if (raw) return { ...defaultSettings, ...(JSON.parse(raw) as Partial<Settings>) };
   } catch {
     /* storage can be unavailable (private mode) */

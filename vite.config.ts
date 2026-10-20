@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icon.svg", "apple-touch-icon.png"],
       manifest: {
-        name: "Rotaray",
-        short_name: "Rotaray",
+        name: "Railtally",
+        short_name: "Railtally",
         description: "Unofficial train board game companion",
         display: "standalone",
         background_color: "#10202b",

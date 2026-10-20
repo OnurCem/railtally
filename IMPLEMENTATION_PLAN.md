@@ -1,6 +1,6 @@
-# Implementation Plan — Rotaray (train board game companion, Europe map)
+# Implementation Plan — Railtally (train board game companion, Europe map)
 
-> App name: **Rotaray**. The public name must **not** include "Ticket to Ride" (trademark of Days of Wonder).
+> App name: **Railtally** (renamed from "Rotaray", which another app already uses). The public name must **not** include "Ticket to Ride" (trademark of Days of Wonder).
 
 ## 1. Goals
 
@@ -312,7 +312,7 @@ Milestone 1 (data entry and checking) is the most error-prone part. I can enter 
 ## 12. Decisions
 | Question | Decision |
 |---|---|
-| App name | **Rotaray** — check App Store, Google Play and domain availability before release |
+| App name | **Railtally** — domains and app stores screened; still run formal trademark searches (EUIPO, USPTO, Türk Patent) before release |
 | Languages | English + Turkish |
 | Opponent info | Show both route score and trains left (allowed by the rules) |
 | Game history | Yes — list of past games, stats, JSON export/import |
@@ -331,4 +331,4 @@ Milestone 1 (data entry and checking) is the most error-prone part. I can enter 
 | 5 | Persistence + PWA | Done (IndexedDB, installable, offline e2e test) |
 | 6 | End game + history | Done (European Express, tickets, stats, JSON export/import) |
 | 6b | Languages + polish | Done (EN/TR, color-blind mode, dark mode, large text, wake lock) |
-| 7 | Release v1 | Open: test on a real iPhone and Android, pick the public host, check the name "Rotaray" |
+| 7 | Release v1 | Open: test on a real iPhone and Android, pick the public host, run trademark searches for "Railtally" |

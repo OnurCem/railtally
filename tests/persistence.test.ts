@@ -72,10 +72,19 @@ describe("export / import", () => {
     expect(await listGames()).toHaveLength(2);
   });
 
+  it("still accepts backups made before the rename and writes the new format", async () => {
+    await saveGame("a");
+    const exported = JSON.parse(await exportAll());
+    expect(exported.app).toBe("railtally");
+    await clear();
+    const legacy = JSON.stringify({ ...exported, app: "rotaray" });
+    expect(await importAll(legacy)).toEqual({ imported: 1, skipped: 0 });
+  });
+
   it("rejects invalid files and skips broken games", async () => {
     await expect(importAll("not json")).rejects.toThrow("invalidFile");
     await expect(importAll(JSON.stringify({ app: "other" }))).rejects.toThrow("invalidFile");
-    const bad = JSON.stringify({ app: "rotaray", version: 1, games: [{ gameId: "x", actions: [{ type: "GAME_ENDED" }] }] });
+    const bad = JSON.stringify({ app: "railtally", version: 1, games: [{ gameId: "x", actions: [{ type: "GAME_ENDED" }] }] });
     expect(await importAll(bad)).toEqual({ imported: 0, skipped: 1 });
   });
 });
