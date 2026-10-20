@@ -271,3 +271,15 @@ test("tapping a route flashes a highlight", async ({ page }) => {
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
   await expect(page.locator(".map-selected, .map-flash").first()).toBeAttached();
 });
+
+test("a finger tap on a route opens the claim dialog and it stays open", async ({ page }) => {
+  await startGame(page);
+  const cars = page.locator('[data-route="budapest-kyiv-a"] rect');
+  const box = (await cars.nth(1).boundingBox())!;
+  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.getByTestId("claim-picker")).toBeVisible();
+  await page.waitForTimeout(500); // the synthesized click arrives after the dialog opened
+  await expect(page.getByTestId("claim-picker")).toBeVisible();
+  await page.getByTestId("claim-p1").tap();
+  await expect(page.getByTestId("claim-picker")).toBeHidden();
+});

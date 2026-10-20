@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -16,8 +16,20 @@ export function Sheet({ title, onClose, children, testId }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  // A sheet that opens on pointer-up (tapping a route) receives the tap's synthesized click.
+  // Only close when the press itself started on the backdrop.
+  const pressedBackdrop = useRef(false);
+
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
+    <div
+      className="sheet-backdrop"
+      onPointerDown={(e) => (pressedBackdrop.current = e.target === e.currentTarget)}
+      onClick={(e) => {
+        const close = pressedBackdrop.current && e.target === e.currentTarget;
+        pressedBackdrop.current = false;
+        if (close) onClose();
+      }}
+    >
       <div className="sheet" role="dialog" aria-modal="true" aria-label={title} data-testid={testId} onClick={(e) => e.stopPropagation()}>
         <header className="sheet-header">
           <h2>{title}</h2>
