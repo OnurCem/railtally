@@ -32,7 +32,7 @@ The key design decision: **v1 is built so that v4 does not require a rewrite** (
 | UI | React 18 | Large ecosystem, easy to move to React Native later if needed |
 | State | Zustand + pure reducer | Small; the reducer is reusable on a future server |
 | Map rendering | Inline SVG (React components) | Sharp at any zoom, easy tap targets, CSS theming |
-| Pan / zoom | `@use-gesture/react` + CSS transform | Pinch-zoom and drag on mobile |
+| Pan / zoom | Custom pointer-event handling + CSS transform | Pinch-zoom, drag, tap and long-press in one place (`@use-gesture` was dropped) |
 | Storage | IndexedDB via `idb-keyval` | Reliable offline storage of the action log |
 | PWA | `vite-plugin-pwa` (Workbox) | Manifest, service worker, offline cache |
 | Unit tests | Vitest | Reducer, scoring, map-data validation |
@@ -149,7 +149,7 @@ interface SyncAdapter {
 | 3 stations per player, unused = 4 points each | Station counter, final score |
 | Double routes: in 2–3 player games only one of the pair can be used | Second route of the pair is disabled when the first is claimed |
 | Same player cannot claim both routes of a double | Reducer rejects it |
-| A city can hold only one station per player | Reducer rejects it |
+| A city can hold only one station (real rule; stricter than "one per player") | Reducer rejects it |
 | European Express (+10, longest continuous path) | **Shown at the end**, calculated with a longest-trail search on each player's routes |
 | Ticket points | Not in v1 (tickets arrive in v2); manual "+/− ticket points" entry at game end |
 
@@ -316,3 +316,19 @@ Milestone 1 (data entry and checking) is the most error-prone part. I can enter 
 | Languages | English + Turkish |
 | Opponent info | Show both route score and trains left (allowed by the rules) |
 | Game history | Yes — list of past games, stats, JSON export/import |
+
+---
+
+## 13. Implementation status
+
+| # | Milestone | Status |
+|---|---|---|
+| 0 | Project setup | Done (preview URL: deploy `dist/` manually, no CI by choice) |
+| 1 | Map data | Done — **still to verify against the physical board** |
+| 2 | Map rendering | Done (rotate, pinch/wheel zoom, pan, double-tap reset, 44px tap targets) |
+| 3 | Game core | Done (unit tests for reducer, rules, scoring) |
+| 4 | Game flow UI | Done |
+| 5 | Persistence + PWA | Done (IndexedDB, installable, offline e2e test) |
+| 6 | End game + history | Done (European Express, tickets, stats, JSON export/import) |
+| 6b | Languages + polish | Done (EN/TR, color-blind mode, dark mode, large text, wake lock) |
+| 7 | Release v1 | Open: test on a real iPhone and Android, pick the public host, check the name "Rotaray" |
