@@ -2,3 +2,8 @@
 html, body, #root { height: 100%; margin: 0; }
 body { background: #10202b; color: #f4f1ea; }
 main { padding: 16px; }
+.map-viewport { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; user-select: none; background: #0b1820; }
+.map-content { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.map-bg { fill: #1d3a4a; }
+.map-selected { stroke: #f2b134; opacity: 0.55; }
+.map-label { font: 600 13px system-ui, sans-serif; fill: #f4f1ea; paint-order: stroke; stroke: #10202b; stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }

@@ -1,0 +1,114 @@
+import { memo } from "react";
+import { cities } from "../../data/cities";
+import { MAP_HEIGHT, MAP_WIDTH } from "../../data/projection";
+import type { GameState } from "../../game/state";
+import { PLAYER_FILL, ROUTE_FILL } from "./colors";
+import { cityPoints, geometries, NODE_RADIUS } from "./geometry";
+import { patternId, Patterns } from "./Patterns";
+
+const CAR_WIDTH = 11;
+const INK = "#10202b";
+
+interface Props {
+  state: GameState;
+  colorBlind: boolean;
+  selectedRouteId: string | null;
+  cityLabels: Map<string, string>;
+}
+
+export const MapContent = memo(function MapContent({ state, colorBlind, selectedRouteId, cityLabels }: Props) {
+  const playerById = new Map(state.players.map((p) => [p.id, p]));
+  return (
+    <svg
+      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
+      width="100%"
+      height="100%"
+      role="img"
+      aria-label="Map of Europe"
+      style={{ display: "block" }}
+    >
+      <Patterns />
+      <rect width={MAP_WIDTH} height={MAP_HEIGHT} className="map-bg" />
+
+      {selectedRouteId &&
+        geometries
+          .filter((g) => g.route.id === selectedRouteId)
+          .map((g) => (
+            <line
+              key="sel"
+              x1={g.start[0]}
+              y1={g.start[1]}
+              x2={g.end[0]}
+              y2={g.end[1]}
+              className="map-selected"
+              strokeWidth={CAR_WIDTH + 12}
+              strokeLinecap="round"
+            />
+          ))}
+
+      {geometries.map(({ route, cars }) => {
+        const owner = playerById.get(state.claims[route.id]);
+        const fill = owner ? PLAYER_FILL[owner.color] : ROUTE_FILL[route.color];
+        const pattern = owner ? owner.color : route.color;
+        return (
+          <g key={route.id} data-route={route.id} className={owner ? "route claimed" : "route"}>
+            {cars.map((car, i) => (
+              <g key={i} transform={`translate(${car.x} ${car.y}) rotate(${car.angle})`}>
+                <rect
+                  x={-car.length / 2}
+                  y={-CAR_WIDTH / 2}
+                  width={car.length}
+                  height={CAR_WIDTH}
+                  rx={2.5}
+                  fill={fill}
+                  stroke={owner ? "#ffffff" : INK}
+                  strokeWidth={owner ? 2 : 1.2}
+                  strokeDasharray={route.tunnel ? "4 2.5" : undefined}
+                />
+                {colorBlind && pattern !== "gray" && (
+                  <rect
+                    x={-car.length / 2}
+                    y={-CAR_WIDTH / 2}
+                    width={car.length}
+                    height={CAR_WIDTH}
+                    rx={2.5}
+                    fill={`url(#${patternId(pattern)})`}
+                  />
+                )}
+                {car.locomotive && !owner && (
+                  <circle r={3.6} fill={INK} stroke="#ffffff" strokeWidth={1.2} />
+                )}
+              </g>
+            ))}
+          </g>
+        );
+      })}
+
+      {cities.map((city) => {
+        const [x, y] = cityPoints.get(city.id)!;
+        const station = playerById.get(state.stations[city.id]);
+        return (
+          <g key={city.id} data-city={city.id}>
+            <circle
+              cx={x}
+              cy={y}
+              r={station ? NODE_RADIUS - 1 : NODE_RADIUS - 4}
+              fill={station ? PLAYER_FILL[station.color] : "#ffffff"}
+              stroke={station ? "#ffffff" : INK}
+              strokeWidth={station ? 3 : 2.5}
+            />
+            {station && <path d={`M${x - 5} ${y + 3} L${x} ${y - 5} L${x + 5} ${y + 3} Z`} fill="#ffffff" />}
+            <text
+              x={x + (city.labelOffset?.dx ?? 0)}
+              y={y + (city.labelOffset?.dy ?? -NODE_RADIUS - 5)}
+              textAnchor="middle"
+              className="map-label"
+            >
+              {cityLabels.get(city.id) ?? city.name}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+});
