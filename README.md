@@ -7,7 +7,7 @@ and keep a history of finished games. English and Turkish. Works offline.
 > Unofficial fan-made companion app, not affiliated with Days of Wonder. The map is drawn from real geography in an
 > original style; it contains no board artwork.
 
-See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the design and roadmap (ticket chooser, strategy builder and
+See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the design and [REMAINING_PLAN.md](REMAINING_PLAN.md) for what is left, in recommended order. The roadmap (ticket chooser, strategy builder and
 real-time multiplayer come later).
 
 ## Develop
