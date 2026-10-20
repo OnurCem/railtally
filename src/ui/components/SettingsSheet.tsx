@@ -46,6 +46,11 @@ export function SettingsSheet({ onClose }: { onClose: () => void }) {
       >
         {t("dataCheck.open")}
       </a>
+      <h3>{t("settings.aboutTitle")}</h3>
+      <p className="muted small" data-testid="about-privacy">
+        {t("settings.privacy")}
+      </p>
+      <p className="muted small">{t("settings.unofficial")}</p>
     </Sheet>
   );
 }

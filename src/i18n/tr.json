@@ -122,7 +122,10 @@
     "themeLight": "Açık",
     "themeDark": "Koyu",
     "largeText": "Büyük yazı",
-    "colorBlind": "Renk körlüğü desenleri"
+    "colorBlind": "Renk körlüğü desenleri",
+    "aboutTitle": "Hakkında",
+    "privacy": "Her şey bu cihazda kalır. Railtally'de hesap yoktur ve hiçbir yere veri göndermez; oyunların yalnızca bu tarayıcıda saklanır.",
+    "unofficial": "Resmî olmayan, hayran yapımı bir uygulamadır; masa oyununun yayıncısıyla bağlantısı yoktur ve onun onayını taşımaz. Oyun adları sahiplerine aittir. Uygulamanın kodu açık kaynaktır (MIT); rota ve bilet verileri oyunu tarif eder ve bu lisansın kapsamında değildir."
   },
   "errors": {
     "gameEnded": "Oyun bitti.",

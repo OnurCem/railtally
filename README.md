@@ -10,6 +10,17 @@ and keep a history of finished games. English and Turkish. Works offline.
 See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) for the design and [REMAINING_PLAN.md](REMAINING_PLAN.md) for what is left, in recommended order. The roadmap (ticket chooser, strategy builder and
 real-time multiplayer come later).
 
+## License and data
+
+The code is released under the [MIT License](LICENSE). The route and ticket data in `src/data/json` (and
+`railtally-data/`) describes the board game's content; it is **not** ours and is not covered by the MIT license.
+The map layout and drawing style are original. This is an unofficial fan project; game names belong to their owners.
+
+## Privacy
+
+Railtally has no backend, no accounts and no analytics. Games are stored only in the browser's IndexedDB on your
+device; nothing is sent anywhere. Export/import backups are files you handle yourself.
+
 ## Develop
 
 ```bash

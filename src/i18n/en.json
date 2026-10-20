@@ -122,7 +122,10 @@
     "themeLight": "Light",
     "themeDark": "Dark",
     "largeText": "Large text",
-    "colorBlind": "Color-blind patterns"
+    "colorBlind": "Color-blind patterns",
+    "aboutTitle": "About",
+    "privacy": "Everything stays on this device. Railtally has no accounts and sends no data anywhere; your games are saved only in this browser.",
+    "unofficial": "Unofficial fan-made app, not affiliated with or endorsed by the publisher of the board game. Game names belong to their owners. The app's code is open source (MIT); the route and ticket data describes the game and is not covered by that license."
   },
   "errors": {
     "gameEnded": "The game has ended.",

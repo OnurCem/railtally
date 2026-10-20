@@ -317,3 +317,9 @@ test("a dialog closed with its button leaves no extra history entry", async ({ p
   await page.goBack();
   await expect(page.getByTestId("new-game")).toBeVisible();
 });
+
+test("settings show the privacy note", async ({ page }) => {
+  await page.goto("./");
+  await page.getByTestId("open-settings").click();
+  await expect(page.getByTestId("about-privacy")).toContainText("Everything stays on this device");
+});
