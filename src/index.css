@@ -150,9 +150,11 @@ button:disabled { opacity: 0.45; cursor: default; }
 .map-selected { stroke: var(--accent); opacity: 0.6; }
 .map-label { font: 600 13px system-ui, sans-serif; fill: var(--map-label); paint-order: stroke; stroke: var(--map-halo); stroke-width: 3.5px; stroke-linejoin: round; pointer-events: none; }
 
-.toolbar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
+.toolbar { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); background: var(--surface); border-top: 1px solid var(--border); padding-bottom: env(safe-area-inset-bottom); }
 .tool { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 58px; border: 0; background: none; font-size: 0.8rem; }
 .tool span { font-size: 1.35rem; line-height: 1; }
+.tool { padding: 0 2px; text-align: center; line-height: 1.1; font-size: 0.75rem; }
+@media (max-height: 500px) { .tool { flex-direction: row; gap: 6px; min-height: 40px; } }
 
 .toast { position: absolute; left: 12px; right: 12px; top: 12px; background: var(--danger); color: #fff; padding: 12px 14px; border-radius: 12px; font-weight: 600; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); }
 :root[data-theme="dark"] .toast { color: #10202b; }

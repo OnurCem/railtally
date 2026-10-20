@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { registerSheet } from "../hooks/sheetHistory";
 
 interface Props {
   title: string;
@@ -10,11 +11,19 @@ interface Props {
 
 export function Sheet({ title, onClose, children, testId }: Props) {
   const { t } = useTranslation();
+  const closeRef = useRef(onClose);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    closeRef.current = onClose;
+  });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeRef.current();
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    const unregister = registerSheet(() => closeRef.current());
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      unregister();
+    };
+  }, []);
 
   // A sheet that opens on pointer-up (tapping a route) receives the tap's synthesized click.
   // Only close when the press itself started on the backdrop.

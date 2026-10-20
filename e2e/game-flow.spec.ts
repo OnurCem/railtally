@@ -283,3 +283,37 @@ test("a finger tap on a route opens the claim dialog and it stays open", async (
   await page.getByTestId("claim-p1").tap();
   await expect(page.getByTestId("claim-picker")).toBeHidden();
 });
+
+test("the toolbar stays on one row and fits a 375 px phone", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 700 });
+  await startGame(page);
+  const tops = await page.locator(".toolbar .tool").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  expect(new Set(tops).size).toBe(1);
+});
+
+test("the back button closes a dialog first, then leaves the map", async ({ page }) => {
+  await startGame(page);
+  const cars = page.locator('[data-route="budapest-kyiv-a"] rect');
+  const box = (await cars.nth(1).boundingBox())!;
+  await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(page.getByTestId("claim-picker")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId("claim-picker")).toBeHidden();
+  await expect(page.getByTestId("map-viewport")).toBeVisible();
+
+  await page.getByTestId("menu").click();
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.goBack();
+  await expect(page.getByTestId("settings-sheet")).toBeHidden();
+  await page.goBack(); // no dialog left: leaves the map
+  await expect(page.getByTestId("new-game")).toBeVisible();
+});
+
+test("a dialog closed with its button leaves no extra history entry", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("score").click();
+  await page.getByRole("button", { name: "Close" }).click();
+  await page.waitForTimeout(200);
+  await page.goBack();
+  await expect(page.getByTestId("new-game")).toBeVisible();
+});
