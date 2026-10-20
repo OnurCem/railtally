@@ -3,7 +3,7 @@ import { cities } from "../src/data/cities";
 import { routes } from "../src/data/routes";
 import { MAP_HEIGHT, MAP_WIDTH, project } from "../src/data/projection";
 import { cityNear, cityPoints, distanceToPolyline, geometries, routesNear } from "../src/ui/map/geometry";
-import { labels, routeSamplesUnder } from "../src/ui/map/labels";
+import { placeLabels, routeSamplesUnder } from "../src/ui/map/labelPlacement";
 
 describe("projection", () => {
   it("keeps every city inside the map", () => {
@@ -49,6 +49,8 @@ const ccw = (a: P, b: P, c: P) => (c[1] - a[1]) * (b[0] - a[0]) > (b[1] - a[1]) 
 const segmentsCross = (a: P, b: P, c: P, d: P) => ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
 const linesCross = (p: P[], q: P[]) =>
   p.slice(1).some((_, i) => q.slice(1).some((_, j) => segmentsCross(p[i], p[i + 1], q[j], q[j + 1])));
+
+const labels = placeLabels();
 
 describe("readability", () => {
   it("no two routes cross each other", () => {
