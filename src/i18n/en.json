@@ -185,11 +185,10 @@
     "modeStart": "Start of game: choose from my 4 tickets",
     "modeDraw": "I drew 3 tickets: choose which to keep",
     "modeAdd": "Add tickets I already have",
-    "hint_start": "Select the 4 tickets you were dealt (1 long and 3 regular). You must keep at least 2.",
-    "hint_draw": "Select the 3 tickets you drew. You must keep at least 1.",
+    "hint_start": "Select the 4 tickets you were dealt: exactly 1 long and 3 short. You must keep at least 2.",
+    "hint_draw": "Select the 3 short tickets you drew (long tickets are only dealt at the start). You must keep at least 1.",
     "hint_add": "Select the tickets you hold.",
     "search": "Search city",
-    "selected": "{{n}} of {{max}} selected",
     "selectedFree": "{{n}} selected",
     "recommend": "Recommend",
     "add": "Add selected",
@@ -219,6 +218,8 @@
     "stationLine": "{{city}}: use {{route}}",
     "stationNew": "new station, costs {{points}} end-game points",
     "stationHave": "your station",
-    "withStation": "with a station"
+    "withStation": "with a station",
+    "selectedStart": "{{long}} of 1 long, {{short}} of 3 short selected",
+    "selectedShort": "{{n}} of {{max}} short tickets selected"
   }
 }

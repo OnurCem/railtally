@@ -337,8 +337,9 @@ test("tickets: pick the 4 dealt tickets, get a recommendation and keep it", asyn
   await page.getByTestId("option-kobenhavn-erzurum").click();
   await page.getByTestId("ticket-search").fill("");
   for (const id of ["athina-angora", "frankfurt-kobenhavn", "paris-wien"]) await page.getByTestId(`option-${id}`).click();
-  await expect(page.getByTestId("selected-count")).toHaveText("4 of 4 selected");
+  await expect(page.getByTestId("selected-count")).toHaveText("1 of 1 long, 3 of 3 short selected");
   await expect(page.getByTestId("option-berlin-bucuresti")).toBeDisabled();
+  await expect(page.getByTestId("option-palermo-moskva")).toBeDisabled(); // only one long ticket allowed
   await page.getByTestId("ticket-next").click();
 
   await expect(page.getByTestId("recommendation")).toBeVisible();
@@ -366,4 +367,26 @@ test("tickets: add a ticket I already hold and close the dialogs", async ({ page
   await expect(page.getByTestId("tickets-sheet")).toBeHidden();
   await page.waitForTimeout(100);
   await expect(page.getByTestId("menu-sheet")).toBeHidden();
+});
+
+test("tickets: the start needs exactly 1 long + 3 short, drawing during the game allows no long ticket", async ({ page }) => {
+  await startGame(page);
+  await page.getByTestId("menu").click();
+  await page.getByTestId("open-tickets").click();
+  await page.getByTestId("mode-start").click();
+  for (const id of ["athina-angora", "frankfurt-kobenhavn", "paris-wien"]) await page.getByTestId(`option-${id}`).click();
+  await expect(page.getByTestId("option-budapest-sofia")).toBeDisabled(); // 3 short tickets are enough
+  await expect(page.getByTestId("ticket-next")).toBeDisabled(); // the long ticket is missing
+  await page.getByTestId("option-palermo-moskva").click();
+  await expect(page.getByTestId("ticket-next")).toBeEnabled();
+  await page.getByRole("button", { name: "Back" }).click();
+
+  await page.getByTestId("mode-draw").click();
+  await expect(page.getByTestId("option-palermo-moskva")).toHaveCount(0);
+  await expect(page.getByTestId("option-kobenhavn-erzurum")).toHaveCount(0);
+  await expect(page.getByTestId("option-athina-angora")).toBeVisible();
+  for (const id of ["athina-angora", "frankfurt-kobenhavn"]) await page.getByTestId(`option-${id}`).click();
+  await expect(page.getByTestId("ticket-next")).toBeDisabled(); // 3 are drawn
+  await page.getByTestId("option-paris-wien").click();
+  await expect(page.getByTestId("ticket-next")).toBeEnabled();
 });

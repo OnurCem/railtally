@@ -12,10 +12,11 @@ import { Sheet } from "./Sheet";
 type Mode = "start" | "draw" | "add";
 type View = { name: "list" } | { name: "pick"; mode: Mode } | { name: "result"; offered: string[]; minKeep: number };
 
-const MODE: Record<Mode, { count: number | null; minKeep: number }> = {
-  start: { count: 4, minKeep: 2 },
-  draw: { count: 3, minKeep: 1 },
-  add: { count: null, minKeep: 0 },
+/** What may be selected: `long` / `short` are exact counts (null = any number); the rules deal 1 long + 3 short at the start. */
+const MODE: Record<Mode, { long: number | null; short: number | null; minKeep: number }> = {
+  start: { long: 1, short: 3, minKeep: 2 },
+  draw: { long: 0, short: 3, minKeep: 1 },
+  add: { long: null, short: null, minKeep: 0 },
 };
 
 const FOLD: Record<string, string> = { ø: "o", æ: "ae", å: "a", ł: "l", đ: "d", ß: "ss", ı: "i" };
@@ -128,13 +129,24 @@ function Picker({ state, mode, onCancel, onDone }: { state: GameState; mode: Mod
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
-  const max = MODE[mode].count;
-  const available = useMemo(() => tickets.filter((tk) => !state.myTickets.includes(tk.id)), [state.myTickets]);
+  const rule = MODE[mode];
+  const available = useMemo(
+    () => tickets.filter((tk) => !state.myTickets.includes(tk.id) && !(tk.long && rule.long === 0)),
+    [state.myTickets, rule.long],
+  );
   const q = plain(query.trim());
   const shown = available.filter((tk) => !q || plain(label(tk)).includes(q));
-  const toggle = (id: string) =>
-    setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : max !== null && s.length >= max ? s : [...s, id]));
-  const ready = max === null ? selected.length > 0 : selected.length === max;
+  const longCount = selected.filter((id) => ticketById.get(id)!.long).length;
+  const shortCount = selected.length - longCount;
+  const full = (tk: Ticket) => (tk.long ? rule.long !== null && longCount >= rule.long : rule.short !== null && shortCount >= rule.short);
+  const toggle = (tk: Ticket) => setSelected((list) => (list.includes(tk.id) ? list.filter((x) => x !== tk.id) : full(tk) ? list : [...list, tk.id]));
+  const ready = rule.short === null ? selected.length > 0 : longCount === rule.long && shortCount === rule.short;
+  const counter =
+    rule.short === null
+      ? t("tickets.selectedFree", { n: selected.length })
+      : rule.long === 0
+        ? t("tickets.selectedShort", { n: shortCount, max: rule.short })
+        : t("tickets.selectedStart", { long: longCount, short: shortCount });
 
   return (
     <>
@@ -149,7 +161,7 @@ function Picker({ state, mode, onCancel, onDone }: { state: GameState; mode: Mod
         data-testid="ticket-search"
       />
       <p className="small" data-testid="selected-count">
-        {max === null ? t("tickets.selectedFree", { n: selected.length }) : t("tickets.selected", { n: selected.length, max })}
+        {counter}
       </p>
       <ul className="list ticket-list" data-testid="ticket-options">
         {shown.map((tk) => {
@@ -159,8 +171,8 @@ function Picker({ state, mode, onCancel, onDone }: { state: GameState; mode: Mod
               <button
                 className={on ? "row-button selected" : "row-button"}
                 aria-pressed={on}
-                disabled={!on && max !== null && selected.length >= max}
-                onClick={() => toggle(tk.id)}
+                disabled={!on && full(tk)}
+                onClick={() => toggle(tk)}
                 data-testid={`option-${tk.id}`}
               >
                 <span>{on ? "✓ " : ""}{label(tk)}</span>

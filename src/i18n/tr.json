@@ -185,11 +185,10 @@
     "modeStart": "Oyun başı: 4 biletimden seç",
     "modeDraw": "3 bilet çektim: hangilerini tutacağımı seç",
     "modeAdd": "Elimdeki biletleri ekle",
-    "hint_start": "Dağıtılan 4 bileti seç (1 uzun, 3 normal). En az 2 tanesini tutmalısın.",
-    "hint_draw": "Çektiğin 3 bileti seç. En az 1 tanesini tutmalısın.",
+    "hint_start": "Dağıtılan 4 bileti seç: tam olarak 1 uzun ve 3 kısa. En az 2 tanesini tutmalısın.",
+    "hint_draw": "Çektiğin 3 kısa bileti seç (uzun biletler yalnızca oyun başında dağıtılır). En az 1 tanesini tutmalısın.",
     "hint_add": "Elindeki biletleri seç.",
     "search": "Şehir ara",
-    "selected": "{{n}} / {{max}} seçildi",
     "selectedFree": "{{n}} seçildi",
     "recommend": "Öner",
     "add": "Seçilenleri ekle",
@@ -219,6 +218,8 @@
     "stationLine": "{{city}}: {{route}} hattını kullan",
     "stationNew": "yeni istasyon, oyun sonunda {{points}} puana mal olur",
     "stationHave": "mevcut istasyonun",
-    "withStation": "istasyonla"
+    "withStation": "istasyonla",
+    "selectedStart": "1 uzun biletten {{long}}, 3 kısa biletten {{short}} seçildi",
+    "selectedShort": "{{n}} / {{max}} kısa bilet seçildi"
   }
 }
