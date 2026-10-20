@@ -7,7 +7,7 @@ import { MapContent } from "./MapContent";
 
 const MIN_ZOOM = 1;
 const MAX_ZOOM = 10;
-const TAP_RADIUS_PX = 20;
+const TAP_RADIUS_PX = 22; // 44px tap target
 const MOVE_SLOP_PX = 8;
 const LONG_PRESS_MS = 550;
 const DOUBLE_TAP_MS = 320;

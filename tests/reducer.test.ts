@@ -157,3 +157,11 @@ describe("end of game and score", () => {
     expect(a.id).not.toBe(b.id);
   });
 });
+
+describe("public vs private actions", () => {
+  it("keeps ticket points private", async () => {
+    const { isPrivateAction } = await import("../src/game/actions");
+    expect(isPrivateAction({ type: "TICKET_POINTS_SET" })).toBe(true);
+    expect(isPrivateAction({ type: "ROUTE_CLAIMED" })).toBe(false);
+  });
+});

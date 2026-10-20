@@ -33,3 +33,7 @@ export const SETUP_ACTIONS: Action["type"][] = ["GAME_CREATED", "PLAYER_ADDED"];
 export function makeAction(body: ActionBody, actorId = "local", at = Date.now()): Action {
   return { ...body, id: crypto.randomUUID(), actorId, at };
 }
+
+/** Never synced to other players in multiplayer (v4); they stay on this device. */
+export const PRIVATE_ACTIONS: Action["type"][] = ["TICKET_POINTS_SET"];
+export const isPrivateAction = (a: Pick<Action, "type">) => PRIVATE_ACTIONS.includes(a.type);
