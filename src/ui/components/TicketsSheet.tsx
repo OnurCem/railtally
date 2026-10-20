@@ -1,11 +1,12 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { cityById, ticketById } from "../../data/lookup";
+import { cityById, routeById, ticketById } from "../../data/lookup";
 import { tickets } from "../../data/tickets";
 import type { Ticket } from "../../data/types";
 import { evaluateTicket, explain, isCompleted, pathContext, rankOptions, type Option } from "../../game/tickets";
 import type { GameState } from "../../game/state";
 import type { ActionBody } from "../../game/actions";
+import { STATION_BONUS } from "../../game/actions";
 import { Sheet } from "./Sheet";
 
 type Mode = "start" | "draw" | "add";
@@ -90,7 +91,11 @@ function HeldList({ state, readOnly, onAction, onPick }: { state: GameState; rea
                   {ticket.long ? ` · ${t("tickets.long")}` : ""}
                 </span>
                 <div className="small" data-testid={`status-${id}`}>
-                  {done ? `✓ ${t("tickets.done")}` : !e.path ? t("tickets.blocked") : t("tickets.toPlace", { count: e.trains })}
+                  {done
+                    ? `✓ ${t("tickets.done")}`
+                    : !e.path
+                      ? t("tickets.blocked")
+                      : `${t("tickets.toPlace", { count: e.trains })}${e.path.borrowed.length ? ` · ${t("tickets.withStation")}` : ""}`}
                 </div>
               </div>
               {!readOnly && (
@@ -222,6 +227,22 @@ function Result({ state, offered, minKeep, onBack, onKeep }: { state: GameState;
             chance: Math.round(option.chanceAll * 100),
           })}
         </p>
+        {option.stations.length > 0 && (
+          <div data-testid="stations">
+            <h4>{t("tickets.stationsTitle")}</h4>
+            <ul className="small">
+              {option.stations.map((s) => {
+                const r = routeById.get(s.route)!;
+                return (
+                  <li key={s.route}>
+                    {t("tickets.stationLine", { city: cityName(s.city), route: `${cityName(r.from)} – ${cityName(r.to)}` })} (
+                    {s.existing ? t("tickets.stationHave") : t("tickets.stationNew", { points: STATION_BONUS })})
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
         {!option.feasible && <p className="banner warn">{t("tickets.tooManyTrains")}</p>}
         <button className="button primary" onClick={() => onKeep(option)} data-testid="keep-these">
           {t("tickets.apply")}

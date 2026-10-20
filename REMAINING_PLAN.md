@@ -113,12 +113,13 @@ Send findings as a list; I fix them in one batch and extend the e2e tests where 
 **Rules from the Turkish rule sheet.** At the start each player gets 1 long + 3 regular tickets and keeps at least 2
 (discards go back to the box). During the game a ticket action draws 3 regular tickets: keep at least 1, the rest go to
 the bottom of the pile. A completed ticket adds its points, an incomplete one subtracts them. Stations let you borrow one
-opponent route each (not modelled yet).
+opponent route each (modelled: `pathCandidates`, `assignStations`).
 
 **Built:** `src/game/paths.ts` (Dijkstra with blocked routes, free own routes, tunnel/ferry penalties),
 `src/game/tickets.ts` (success estimate, option ranking, explanations), `TicketsSheet` (Menu → My tickets).
-**Next:** camera scan of ticket cards (on-device OCR, matched against the 46 known city pairs, user confirms), and
-station-aware paths.
+**Stations:** each of my stations (existing or new, up to 3 in total) can use one opponent route at its city; a new
+station costs the 4 end-game points. The planner picks borrowed routes per ticket and checks one station per route.
+**Skipped for now:** camera scanning of ticket cards.
 
 Original plan:
 

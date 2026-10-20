@@ -205,13 +205,20 @@
     "apply": "Bunları tut",
     "otherChoices": "Diğer seçenekler",
     "altFacts": "{{trains}} tren · {{points}} puan",
-    "note": "Bu bir tahmindir. Rakiplerin haritada aldığı hatlardan kaçınır, senin hatlarını bedava sayar. İstasyonlar henüz hesaba katılmaz.",
+    "note": "Bu bir tahmindir. Rakiplerin haritada aldığı hatlardan kaçınır, senin hatlarını bedava sayar. Her istasyon, şehrindeki bir rakip hattını kullanmanı sağlar; yeni istasyon, kullanılmayan istasyonun oyun sonunda verdiği 4 puana mal olur.",
     "why": {
       "keepShared": "Tuttuğun başka bir biletle ortak hatları var.",
       "keepEfficient": "Gerektirdiği trene göre iyi puan.",
       "dropCostly": "Puanına göre çok tren gerektiriyor.",
       "dropRisky": "Tamamlamadan önce engellenme ihtimali yüksek.",
-      "dropBlocked": "Rakipler tüm bağlantıları zaten engelledi."
-    }
+      "dropBlocked": "Rakipler tüm bağlantıları zaten engelledi.",
+      "keepStation": "İstasyonla iyi gider: ödünç alabileceğin bir rakip hattını kullanır.",
+      "dropNoTrains": "Kalan trenlerinden fazlası gerekiyor."
+    },
+    "stationsTitle": "Bu plandaki istasyonlar",
+    "stationLine": "{{city}}: {{route}} hattını kullan",
+    "stationNew": "yeni istasyon, oyun sonunda {{points}} puana mal olur",
+    "stationHave": "mevcut istasyonun",
+    "withStation": "istasyonla"
   }
 }

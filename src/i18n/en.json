@@ -205,13 +205,20 @@
     "apply": "Keep these",
     "otherChoices": "Other choices",
     "altFacts": "{{trains}} trains · {{points}} pts",
-    "note": "This is an estimate. It avoids routes opponents have claimed on your map and counts routes you own as free. Stations are not considered yet.",
+    "note": "This is an estimate. It avoids routes opponents have claimed on your map and counts routes you own as free. Each station lets you use one opponent route at its city; a new station costs the 4 points an unused station would give at the end.",
     "why": {
       "keepShared": "Shares routes with another ticket you keep.",
       "keepEfficient": "Good points for the trains it needs.",
       "dropCostly": "Needs many trains for its points.",
       "dropRisky": "Likely to be blocked before you finish it.",
-      "dropBlocked": "Opponents already block every connection."
-    }
+      "dropBlocked": "Opponents already block every connection.",
+      "keepStation": "Works well with a station: it uses an opponent route you can borrow.",
+      "dropNoTrains": "Needs more trains than you have left."
+    },
+    "stationsTitle": "Stations in this plan",
+    "stationLine": "{{city}}: use {{route}}",
+    "stationNew": "new station, costs {{points}} end-game points",
+    "stationHave": "your station",
+    "withStation": "with a station"
   }
 }

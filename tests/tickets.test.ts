@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 import { routeById, ticketById } from "../src/data/lookup";
 import { tickets } from "../src/data/tickets";
 import { act, setup, stateOf } from "./helpers";
-import { shortestPath } from "../src/game/paths";
+import { assignStations, pathCandidates, shortestPath } from "../src/game/paths";
 import { evaluateOption, evaluateTicket, explain, isCompleted, pathContext, rankOptions } from "../src/game/tickets";
 
 const game = (players = 3, ...more: ReturnType<typeof act>[]) => stateOf(...setup(players), ...more);
 const claim = (routeId: string, playerId = "p1") => act({ type: "ROUTE_CLAIMED", routeId, playerId });
+const station = (cityId: string, playerId = "p1") => act({ type: "STATION_PLACED", cityId, playerId });
 const ctxOf = (state: ReturnType<typeof game>) => pathContext(state);
 
 describe("shortest path", () => {
@@ -116,8 +117,8 @@ describe("options", () => {
     expect(rankOptions(state, offered.slice(0, 3), 1)).toHaveLength(7);
   });
 
-  it("drops a ticket that opponents have blocked and keeps the others", () => {
-    const blocked = game(3, claim("edinburgh-london-a", "p2"));
+  it("drops a ticket that opponents have blocked when I have no station left to borrow", () => {
+    const blocked = game(3, claim("edinburgh-london-a", "p2"), station("madrid"), station("lisboa"), station("cadiz"));
     const offered = ["edinburgh-paris", "athina-angora", "budapest-sofia"];
     const [best] = rankOptions(blocked, offered, 2);
     expect(best.keep).toEqual(expect.arrayContaining(["athina-angora", "budapest-sofia"]));
@@ -168,5 +169,73 @@ describe("options", () => {
     const o = evaluateOption(state, ["palermo-moskva"], ["palermo-moskva"]);
     expect(o.feasible).toBe(o.trains <= 45 - used);
     expect(evaluateOption(state, [], []).feasible).toBe(true);
+  });
+});
+
+describe("stations", () => {
+  const blockedAmsterdam = () => game(3, claim("amsterdam-bruxelles-a", "p2"));
+
+  it("lets a ticket use an opponent route through a new station", () => {
+    const candidates = pathCandidates("amsterdam", "bruxelles", ctxOf(blockedAmsterdam()));
+    expect(candidates[0].borrowed).toEqual([]);
+    const withStation = candidates.find((c) => c.borrowed.length > 0)!;
+    expect(withStation.borrowed).toEqual(["amsterdam-bruxelles-a"]);
+    expect(withStation.trains).toBe(0);
+  });
+
+  it("does not offer stations when I have none left", () => {
+    const none = game(3, claim("amsterdam-bruxelles-a", "p2"), station("madrid"), station("lisboa"), station("cadiz"));
+    expect(pathCandidates("amsterdam", "bruxelles", ctxOf(none)).every((c) => c.borrowed.length === 0)).toBe(true);
+  });
+
+  it("uses an existing station for free and charges a new one", () => {
+    const ticket = "amsterdam-bruxelles";
+    const fake = { id: ticket, from: "amsterdam", to: "bruxelles", points: 6, long: false };
+    const newOne = evaluateTicket(fake, ctxOf(blockedAmsterdam()));
+    expect(newOne.path!.borrowed).toHaveLength(1);
+    const have = evaluateTicket(fake, ctxOf(game(3, claim("amsterdam-bruxelles-a", "p2"), station("amsterdam"))));
+    expect(have.path!.borrowed).toEqual(["amsterdam-bruxelles-a"]);
+    expect(have.path!.cost).toBeLessThan(newOne.path!.cost);
+  });
+
+  it("assigns one station per borrowed route and respects the limit and other players' stations", () => {
+    const ctx = ctxOf(blockedAmsterdam());
+    const four = ["amsterdam-bruxelles-a", "edinburgh-london-a", "madrid-pamplona-a", "madrid-pamplona-b"];
+    expect(assignStations(["amsterdam-bruxelles-a"], ctx)).toHaveLength(1);
+    expect(assignStations(four, ctx)).toBeNull(); // only 3 stations exist
+    const taken = ctxOf(game(3, claim("amsterdam-bruxelles-a", "p2"), station("amsterdam", "p2"), station("bruxelles", "p3")));
+    expect(assignStations(["amsterdam-bruxelles-a"], taken)).toBeNull(); // both end cities have somebody else's station
+  });
+
+  it("subtracts the end bonus for each new station from the score", () => {
+    const state = game(4, claim("edinburgh-london-a", "p2"), claim("edinburgh-london-b", "p3"));
+    const option = evaluateOption(state, ["edinburgh-paris"], ["edinburgh-paris"]);
+    expect(option.tickets[0].path!.borrowed.length).toBeGreaterThan(0);
+    expect(option.newStations).toBe(1);
+    expect(option.stations).toHaveLength(1);
+    expect(option.stations[0].existing).toBe(false);
+  });
+
+  it("counts a ticket as complete through a station", () => {
+    const t = ticketById.get("athina-angora")!;
+    const path = shortestPath(t.from, t.to, ctxOf(game(3)))!;
+    const [first, ...rest] = path.routes;
+    // an opponent owns the first route, I own the others and have a station at one of its ends
+    const firstRoute = routeById.get(first)!;
+    const state = game(3, claim(first, "p2"), ...rest.map((r) => claim(r)), station(firstRoute.from));
+    expect(isCompleted(state, t)).toBe(true);
+    const noStation = game(3, claim(first, "p2"), ...rest.map((r) => claim(r)));
+    expect(isCompleted(noStation, t)).toBe(false);
+  });
+
+  it("one station serves only one borrowed route", () => {
+    const state = game(
+      3,
+      claim("berlin-frankfurt-a", "p2"),
+      claim("berlin-essen-a", "p2"),
+      station("berlin"),
+    );
+    const ctx = ctxOf(state);
+    expect(assignStations(["berlin-frankfurt-a", "berlin-essen-a"], ctx)!.filter((s) => s.city === "berlin")).toHaveLength(1);
   });
 });
