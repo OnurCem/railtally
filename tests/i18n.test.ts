@@ -1,3 +1,4 @@
+import type { RejectCode } from "../src/sync/protocol";
 import { describe, expect, it } from "vitest";
 import en from "../src/i18n/en.json";
 import tr from "../src/i18n/tr.json";
@@ -21,10 +22,11 @@ describe("translations", () => {
     for (const text of [...flat(en), ...flat(tr)]) expect(text.trim().length).toBeGreaterThan(0);
   });
   it("translates every rule error code", () => {
-    const codes: RuleCode[] = [
+    const codes: (RuleCode | RejectCode)[] = [
       "gameEnded", "unknownRoute", "unknownCity", "unknownPlayer", "unknownTicket", "ticketHeld", "ticketMissing", "routeTaken", "routeNotClaimed", "noTrains",
       "twinOwn", "twinBlocked", "stationTaken", "stationMissing", "noStations", "colorTaken", "tooManyPlayers",
       "tooManyMe", "invalidPlayerCount", "invalidPoints", "gameExists", "noGame",
+      "private", "unknownAction", "setupLocked", "malformed",
     ];
     for (const code of codes) {
       expect(en.errors).toHaveProperty(code);

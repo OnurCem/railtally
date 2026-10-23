@@ -3,6 +3,7 @@ import type { Action, PlayerColor } from "../game/actions";
 import { replay } from "../game/reducer";
 import { finalScore, routeScore, winners } from "../game/selectors";
 import { GAME_KEY_PREFIX, gameKey } from "../sync/LocalAdapter";
+import { deleteSyncState } from "../sync/RemoteAdapter";
 
 export interface PlayerSummary {
   id: string;
@@ -56,7 +57,7 @@ export async function listGames(): Promise<GameSummary[]> {
     .sort((a, b) => b.createdAt - a.createdAt);
 }
 
-export const deleteGame = (gameId: string) => del(gameKey(gameId));
+export const deleteGame = (gameId: string) => Promise.all([del(gameKey(gameId)), deleteSyncState(gameId)]);
 
 export interface Stats {
   gamesPlayed: number;

@@ -6,6 +6,8 @@ import { planStrategy } from "../../game/strategy";
 import { cityById, routeById } from "../../data/lookup";
 import { usePlan } from "../../store/planStore";
 import { StrategySheet } from "../components/StrategySheet";
+import { formatCode } from "../../sync/protocol";
+import { ShareSheet } from "../components/ShareSheet";
 import { canUndo, useGame } from "../../store/gameStore";
 import { useSettings } from "../../store/settingsStore";
 import { ScoreSheet } from "../components/ScoreSheet";
@@ -18,11 +20,11 @@ import type { PlanOverlay } from "../map/MapContent";
 import { MapView } from "../map/MapView";
 import { StationSheet } from "../map/StationSheet";
 
-type Panel = "score" | "menu" | "settings" | "tickets" | "strategy" | null;
+type Panel = "score" | "menu" | "settings" | "tickets" | "strategy" | "share" | null;
 
 export function MapScreen() {
   const { t } = useTranslation();
-  const { state, actions, dispatch, undo, go, closeGame } = useGame();
+  const { state, actions, adapter, shared, notice, clearNotice, dispatch, undo, go, closeGame } = useGame();
   const colorBlind = useSettings((s) => s.colorBlind);
   const readOnly = state.ended;
 
@@ -60,6 +62,13 @@ export function MapScreen() {
   }, [plan, planOn, focusRoute]);
 
   useWakeLock(!readOnly);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(clearNotice, 5000);
+    return () => window.clearTimeout(timer);
+  }, [notice, clearNotice]);
+  const noticeText = notice ? `${notice.undo ? `${t("share.undoRefused")} ` : ""}${t(`errors.${notice.code}`)}` : null;
 
   useEffect(() => {
     if (!toast) return;
@@ -121,6 +130,13 @@ export function MapScreen() {
         </div>
       )}
 
+      {shared && (
+        <div className={`banner top-banner sync-${shared.status}`} role="status" data-testid="sync-status">
+          {t("share.room", { code: formatCode(shared.code) })} · {t(`share.${shared.status}`)}
+          {shared.pending > 0 && ` · ${t("share.waiting", { count: shared.pending })}`}
+        </div>
+      )}
+
       <div className="map-area">
         <MapView
           state={state}
@@ -159,7 +175,12 @@ export function MapScreen() {
             </button>
           </div>
         )}
-        {toast && (
+        {noticeText && (
+          <div className="toast" role="alert" data-testid="sync-notice">
+            {noticeText}
+          </div>
+        )}
+        {toast && !noticeText && (
           <div className="toast" role="alert" data-testid="toast">
             {toast}
           </div>
@@ -181,7 +202,7 @@ export function MapScreen() {
             {t("game.summary")}
           </button>
         ) : (
-          <button className="tool" onClick={undo} disabled={!canUndo(actions)} data-testid="undo">
+          <button className="tool" onClick={undo} disabled={!canUndo(actions, adapter?.actorId)} data-testid="undo">
             <span aria-hidden="true">↶</span>
             {t("game.undo")}
           </button>
@@ -207,6 +228,7 @@ export function MapScreen() {
         />
       )}
       {cityId && !readOnly && <StationSheet state={state} cityId={cityId} onAction={apply} onClose={closePickers} />}
+      {panel === "share" && shared && <ShareSheet code={shared.code} onClose={() => setPanel(null)} />}
       {panel === "score" && <ScoreSheet state={state} onClose={() => setPanel(null)} />}
       {panel === "settings" && <SettingsSheet onClose={() => setPanel(null)} />}
       {panel === "tickets" && (
@@ -258,6 +280,13 @@ export function MapScreen() {
                 {planOn ? t("strategy.overlayHide") : t("strategy.overlayShow")}
               </button>
             </li>
+            {shared && (
+              <li>
+                <button className="row-button" onClick={() => setPanel("share")} data-testid="open-share">
+                  {t("share.menu")}
+                </button>
+              </li>
+            )}
             <li>
               <button className="row-button" onClick={() => setPanel("settings")}>
                 {t("settings.title")}

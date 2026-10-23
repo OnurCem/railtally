@@ -25,17 +25,19 @@ export type ActionBody =
   | { type: "TICKET_POINTS_SET"; playerId: string; points: number }
   | { type: "TICKET_ADDED"; ticketId: string }
   | { type: "TICKET_REMOVED"; ticketId: string }
+  | { type: "SEAT_TAKEN"; playerId: string }
   | { type: "EXPRESS_OVERRIDE"; winners: string[] | null }
   | { type: "GAME_ENDED" };
 
 export type Action = ActionBody & Meta;
 
-export const SETUP_ACTIONS: Action["type"][] = ["GAME_CREATED", "PLAYER_ADDED"];
+/** Cannot be undone. */
+export const SETUP_ACTIONS: Action["type"][] = ["GAME_CREATED", "PLAYER_ADDED", "SEAT_TAKEN"];
 
 export function makeAction(body: ActionBody, actorId = "local", at = Date.now()): Action {
   return { ...body, id: crypto.randomUUID(), actorId, at };
 }
 
-/** Never synced to other players in multiplayer (v4); they stay on this device. */
-export const PRIVATE_ACTIONS: Action["type"][] = ["TICKET_POINTS_SET", "TICKET_ADDED", "TICKET_REMOVED"];
+/** Never synced to other players in multiplayer (v4); they stay on this device. SEAT_TAKEN says which player this device is. */
+export const PRIVATE_ACTIONS: Action["type"][] = ["TICKET_POINTS_SET", "TICKET_ADDED", "TICKET_REMOVED", "SEAT_TAKEN"];
 export const isPrivateAction = (a: Pick<Action, "type">) => PRIVATE_ACTIONS.includes(a.type);

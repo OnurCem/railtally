@@ -219,3 +219,6 @@ a.button { display: inline-flex; align-items: center; justify-content: center; t
 .ticket-list { max-height: 45vh; overflow-y: auto; }
 .ticket-list .row-button { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; }
 .row-button.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, var(--surface)); }
+.room-code { font-size: 2.4rem; font-weight: 800; letter-spacing: 0.12em; text-align: center; margin: 12px 0 4px; }
+.sync-offline { background: var(--warn-bg); color: var(--warn-text); }
+.error { color: var(--danger); font-weight: 600; }

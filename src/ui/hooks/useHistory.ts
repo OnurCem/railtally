@@ -3,7 +3,7 @@ import { useGame, type Screen } from "../../store/gameStore";
 import { consumeSheetEntry, handleSheetPop, sheetEntryActive } from "./sheetHistory";
 
 /** Depth of each screen in the browser history, so the system back button walks summary → map → home. */
-const DEPTH: Record<Screen, number> = { home: 0, new: 1, game: 1, summary: 2 };
+const DEPTH: Record<Screen, number> = { home: 0, new: 1, join: 1, game: 1, summary: 2 };
 const PARENT: Record<number, Screen> = { 0: "home", 1: "game" };
 
 interface HistoryState {

@@ -65,6 +65,10 @@ export function reduce(state: GameState, action: Action): GameState {
       if (!state.myTickets.includes(action.ticketId)) throw new RuleError("ticketMissing");
       return { ...state, myTickets: state.myTickets.filter((id) => id !== action.ticketId) };
     }
+    case "SEAT_TAKEN": {
+      if (!hasPlayer(state, action.playerId)) throw new RuleError("unknownPlayer");
+      return { ...state, players: state.players.map((p) => ({ ...p, isMe: p.id === action.playerId })) };
+    }
     case "EXPRESS_OVERRIDE": {
       if (action.winners && !action.winners.every((id) => hasPlayer(state, id))) {
         throw new RuleError("unknownPlayer");
@@ -93,4 +97,19 @@ export function tryReduce(state: GameState, action: Action): TryResult {
     if (e instanceof RuleError) return { ok: false, error: e };
     throw e;
   }
+}
+
+/**
+ * Replays a merged multiplayer log. Actions that are illegal in this order (a pending action that lost a race,
+ * a private action whose anchor moved) are skipped instead of aborting; the skipped ones are returned too.
+ */
+export function replayTolerant(actions: Action[]): { state: GameState; skipped: Action[] } {
+  const skipped: Action[] = [];
+  let state = initialState;
+  for (const action of actions) {
+    const result = tryReduce(state, action);
+    if (result.ok) state = result.state;
+    else skipped.push(action);
+  }
+  return { state, skipped };
 }

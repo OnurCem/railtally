@@ -103,6 +103,10 @@ export function Home() {
         {t("home.newGame")}
       </button>
 
+      <button className="button big" onClick={() => go("join")} data-testid="join-game">
+        {t("home.joinGame")}
+      </button>
+
       {games && games.length === 0 && <p className="muted">{t("home.noGames")}</p>}
 
       {active.length > 0 && (

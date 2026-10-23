@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PLAYER_COLORS, type PlayerColor } from "../../game/actions";
+import { getSyncUrl } from "../../sync/config";
 import { useGame } from "../../store/gameStore";
 import { ColorDot } from "../components/ColorDot";
 
@@ -14,7 +15,9 @@ const makeDrafts = (count: number, previous: Draft[] = []): Draft[] =>
 
 export function NewGame() {
   const { t } = useTranslation();
-  const { createGame, go } = useGame();
+  const { createGame, createSharedGame, go } = useGame();
+  const [together, setTogether] = useState(false);
+  const configured = getSyncUrl() !== null;
   const [count, setCount] = useState(3);
   const [drafts, setDrafts] = useState<Draft[]>(() => makeDrafts(5));
   const [me, setMe] = useState(0);
@@ -41,7 +44,9 @@ export function NewGame() {
   };
 
   const start = () =>
-    createGame(players.map((p, i) => ({ name: p.name, color: p.color, isMe: i === me })));
+    together
+      ? createSharedGame(count, { name: drafts[0].name, color: drafts[0].color })
+      : createGame(players.map((p, i) => ({ name: p.name, color: p.color, isMe: i === me })));
 
   return (
     <div className="screen page">
@@ -51,6 +56,19 @@ export function NewGame() {
         </button>
         <h1>{t("newGame.title")}</h1>
       </header>
+
+      <fieldset className="field">
+        <legend>{t("newGame.mode")}</legend>
+        <div className="segmented" role="radiogroup">
+          <button role="radio" aria-checked={!together} className={!together ? "seg active" : "seg"} onClick={() => setTogether(false)} data-testid="mode-local">
+            {t("newGame.modeLocal")}
+          </button>
+          <button role="radio" aria-checked={together} className={together ? "seg active" : "seg"} onClick={() => setTogether(true)} data-testid="mode-together">
+            {t("newGame.modeTogether")}
+          </button>
+        </div>
+        {together && <p className="muted small">{configured ? t("newGame.togetherHint") : t("join.errors.notConfigured")}</p>}
+      </fieldset>
 
       <fieldset className="field">
         <legend>{t("newGame.playerCount")}</legend>
@@ -70,7 +88,7 @@ export function NewGame() {
         </div>
       </fieldset>
 
-      {players.map((p, i) => (
+      {(together ? players.slice(0, 1) : players).map((p, i) => (
         <section className="card" key={i} data-testid={`player-${i + 1}`}>
           <label className="field">
             <span>{t("common.player", { n: i + 1 })}</span>
@@ -98,15 +116,17 @@ export function NewGame() {
               </button>
             ))}
           </div>
+          {!together && (
           <label className="field check">
             <input type="radio" name="me" checked={me === i} onChange={() => setMe(i)} data-testid={`me-${i + 1}`} />
             <span>{t("newGame.isMe")}</span>
           </label>
+          )}
         </section>
       ))}
 
-      <button className="button primary big" onClick={start} data-testid="start-game">
-        {t("newGame.start")}
+      <button className="button primary big" onClick={start} disabled={together && !configured} data-testid="start-game">
+        {together ? t("newGame.startTogether") : t("newGame.start")}
       </button>
     </div>
   );

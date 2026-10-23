@@ -35,7 +35,8 @@
     "importSkipped_other": "{{count}} games were skipped.",
     "importFailed": "This file is not a Railtally backup.",
     "winner": "Winner",
-    "players": "{{count}} players"
+    "players": "{{count}} players",
+    "joinGame": "Join a shared game"
   },
   "newGame": {
     "title": "New game",
@@ -43,7 +44,12 @@
     "name": "Name (optional)",
     "color": "Color",
     "isMe": "This is me",
-    "start": "Start game"
+    "start": "Start game",
+    "mode": "How do you play?",
+    "modeLocal": "On this phone",
+    "modeTogether": "Together, each on own phone",
+    "togetherHint": "You get a code. Friends enter it on their phones and pick their color.",
+    "startTogether": "Create shared game"
   },
   "colors": {
     "red": "Red",
@@ -151,7 +157,11 @@
     "noGame": "No game is open.",
     "unknownTicket": "Unknown ticket.",
     "ticketHeld": "You already have this ticket.",
-    "ticketMissing": "You do not have this ticket."
+    "ticketMissing": "You do not have this ticket.",
+    "private": "This action stays on your phone.",
+    "unknownAction": "That action is not in the game any more.",
+    "setupLocked": "Players and game setup cannot be undone.",
+    "malformed": "The server did not understand that."
   },
   "dataCheck": {
     "title": "Data check",
@@ -258,5 +268,38 @@
     },
     "note": "This is a heuristic plan, not a guaranteed best. It is recomputed from the map after every change. Routes you own count as done; each station borrows one opponent route.",
     "showOnMap": "Show on map"
+  },
+  "join": {
+    "title": "Join a shared game",
+    "code": "Game code",
+    "lookup": "Find game",
+    "looking": "Looking…",
+    "found": "Game found: {{count}} of {{total}} players are in.",
+    "whichAreYou": "Already in this game? Tap your name",
+    "newPlayer": "Or join as a new player",
+    "joinAsNew": "Join game",
+    "errors": {
+      "invalidCode": "That is not a game code. It has 6 letters and digits.",
+      "notConfigured": "Shared games need a game server, which is not set up in this version yet.",
+      "offline": "Could not reach the game server. Check your connection and try again.",
+      "notFound": "No game with this code."
+    }
+  },
+  "share": {
+    "menu": "Share game (code and link)",
+    "title": "Share game",
+    "intro": "Friends open the app, tap “Join a shared game” and enter this code, or open the link.",
+    "code": "Game code",
+    "send": "Send link",
+    "copied": "Link copied.",
+    "privacy": "Only the board (claimed routes, stations, players) is shared. Your tickets and strategy stay on your phone.",
+    "message": "Join my Railtally game with code {{code}}",
+    "room": "Game {{code}}",
+    "online": "online",
+    "offline": "offline, changes are saved and sent later",
+    "connecting": "connecting…",
+    "waiting_one": "{{count}} change waiting",
+    "waiting_other": "{{count}} changes waiting",
+    "undoRefused": "Undo not possible:"
   }
 }

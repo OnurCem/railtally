@@ -18,7 +18,7 @@ what is left, in the order I recommend. "You" = needs the owner; "Me" = can be d
 | 5 | Release gate (trademark, domain, license, legal decisions) | You | 1–2 h | Must be done before the link is shared widely. |
 | 6 | v2 Ticket chooser | Me | 4–6 h | First feature that needs the verified data from step 1. |
 | 7 | v3 Strategy builder | Me | 1–2 days | Builds on v2's path-finding. |
-| 8 | v4 Real-time multiplayer | Me + You (backend account) | several days | Largest and needs infrastructure, so last. |
+| 8 | v4 Real-time multiplayer | Me + You (backend account) | several days | Client built; server waits for your Cloudflare account. |
 
 Steps 1–5 can finish in a few days. Steps 6–8 are separate projects; re-plan before starting each.
 
@@ -150,18 +150,47 @@ Original plan:
 
 ---
 
-## 8. v4 — Real-time multiplayer
+## 8. v4 — Real-time multiplayer (client built, server not deployed)
 
-- **Backend:** a small server that holds one room per game and runs the shared reducer (`src/game/reducer.ts`) as the
-  authority. Options: PartyKit / Cloudflare Durable Objects (WebSocket rooms), or Supabase Realtime.
-- **Client:** a `RealtimeAdapter` implementing the existing `SyncAdapter`; the UI does not change.
-- **Joining:** host creates a game and gets a join code and QR code; others join from their phones. Optional anonymous
-  sign-in, no accounts.
-- **Rules:** only public actions are synced; private actions stay on the phone (`isPrivateAction`). The server rejects
-  illegal actions, which also settles two players claiming the same route at once.
-- **Reconnect:** reload the action list from the server.
-- **Needs from you:** a backend account and a decision on hosting cost (free tiers exist, but check limits).
-- Note: undo currently removes the last action. In multiplayer it becomes a compensating action, so define that before building.
+**Design (decided):**
+- **Backend:** one Cloudflare Worker with a Durable Object per game code (`server/worker.ts`, SQLite-backed, free plan).
+  Chosen because the shared reducer runs unchanged on it (the server is the authority, as the plan wanted), and a
+  WebSocket room is a natural fit. Supabase would mean rules in SQL or trusting clients; PartyKit is the same idea with
+  one more vendor. The authority logic is a plain class, `src/sync/room.ts`, tested without any network.
+- **Sync model:** the server keeps an append-only log of *public* actions with a server-assigned `seq`. Clients apply
+  their own actions at once (optimistic, "pending"), send them, and replace them by the server's order when it arrives.
+  Action ids make resending safe (duplicates are ignored). Two players claiming one route: the first to arrive wins, the
+  other client gets a "rejected" message, drops its pending action and shows a notice.
+- **Undo:** becomes a *revocation* entry (the log is never rewritten). The server accepts it only if the rest of the log
+  still replays legally; setup actions (game, players) cannot be revoked. Undo takes back the player's own newest action.
+  Re-opening a finished game revokes `GAME_ENDED` (anybody can).
+- **Private actions** (`PRIVATE_ACTIONS`, now also `SEAT_TAKEN` = "which player am I on this phone") are stored on the
+  device only, anchored after the public action they followed; the server also refuses them.
+- **Offline:** everything keeps working; pending actions are saved in IndexedDB (`sync:<gameId>`) and resent on
+  reconnect, which first asks for the entries it missed (`hello since=seq`).
+- **Joining:** the host gets a 6-character code (no look-alike letters) and a link `…/#join=CODE`; a joiner enters the
+  code or opens the link, sees who is in, and either takes an existing seat (also how to return on a new phone) or adds
+  a new player.
+- **Files:** `src/sync/{protocol,room,merge,RemoteAdapter,transport,memoryTransport,webSocketTransport,config}.ts`,
+  `server/`, UI in NewGame ("Together"), `JoinGame`, `ShareSheet`, a status banner on the map.
+- **Tests:** `tests/sync.test.ts` (room, merge, two adapters on an in-memory server: convergence, races, offline,
+  duplicates, undo, persistence), `tests/sharedStore.test.ts`, `e2e/shared-game.spec.ts`.
+
+**Needs from you (not done, nothing created yet):**
+1. A free Cloudflare account, then `cd server && npx wrangler login && npx wrangler deploy` (see `server/README.md`).
+2. Tell the app the address: `VITE_SYNC_URL=wss://… npm run build`, or for a quick test
+   `localStorage.setItem("railtally:syncUrl", "wss://…")` on a phone. Without it the "Together" button is disabled.
+3. Then a real two-phone test.
+
+**Known limits:**
+- No real network test yet (only the in-memory server); `webSocketTransport.ts` and `server/worker.ts` are untested.
+- The code is the only secret: anyone who guesses a code can join or write. Fine for friends; add a per-room secret
+  if it matters.
+- If the server loses a room, clients that are ahead are not re-uploaded (no resync from client to server).
+- A joiner's seat is private, so two phones could both claim the same existing seat.
+- A new player whose join is refused after the fact (race) sees only a notice and has no seat.
+- No QR code yet (link and code only); backups export the merged log as a plain local game.
+- Rooms are never deleted on the server.
 
 ---
 

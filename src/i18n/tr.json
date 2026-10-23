@@ -35,7 +35,8 @@
     "importSkipped_other": "{{count}} oyun atlandı.",
     "importFailed": "Bu dosya bir Railtally yedeği değil.",
     "winner": "Kazanan",
-    "players": "{{count}} oyuncu"
+    "players": "{{count}} oyuncu",
+    "joinGame": "Ortak oyuna katıl"
   },
   "newGame": {
     "title": "Yeni oyun",
@@ -43,7 +44,12 @@
     "name": "İsim (isteğe bağlı)",
     "color": "Renk",
     "isMe": "Bu benim",
-    "start": "Oyunu başlat"
+    "start": "Oyunu başlat",
+    "mode": "Nasıl oynuyorsunuz?",
+    "modeLocal": "Bu telefonda",
+    "modeTogether": "Birlikte, herkes kendi telefonunda",
+    "togetherHint": "Bir kod alırsın. Arkadaşların kodu kendi telefonlarında girip rengini seçer.",
+    "startTogether": "Ortak oyun oluştur"
   },
   "colors": {
     "red": "Kırmızı",
@@ -151,7 +157,11 @@
     "noGame": "Açık oyun yok.",
     "unknownTicket": "Bilinmeyen bilet.",
     "ticketHeld": "Bu bilet zaten sende.",
-    "ticketMissing": "Bu bilet sende değil."
+    "ticketMissing": "Bu bilet sende değil.",
+    "private": "Bu işlem telefonunda kalır.",
+    "unknownAction": "Bu işlem artık oyunda yok.",
+    "setupLocked": "Oyuncular ve oyun kurulumu geri alınamaz.",
+    "malformed": "Sunucu bunu anlamadı."
   },
   "dataCheck": {
     "title": "Veri kontrolü",
@@ -258,5 +268,38 @@
     },
     "note": "Bu bir sezgisel plandır, en iyisi olduğu garanti değildir. Haritada her değişiklikten sonra yeniden hesaplanır. Sahip olduğun rotalar tamamlanmış sayılır; her istasyon bir rakip rotasını ödünç alır.",
     "showOnMap": "Haritada göster"
+  },
+  "join": {
+    "title": "Ortak oyuna katıl",
+    "code": "Oyun kodu",
+    "lookup": "Oyunu bul",
+    "looking": "Aranıyor…",
+    "found": "Oyun bulundu: {{total}} oyuncudan {{count}} kişi içeride.",
+    "whichAreYou": "Bu oyunda zaten varsan adına dokun",
+    "newPlayer": "Ya da yeni oyuncu olarak katıl",
+    "joinAsNew": "Oyuna katıl",
+    "errors": {
+      "invalidCode": "Bu bir oyun kodu değil. Kod 6 harf ve rakamdan oluşur.",
+      "notConfigured": "Ortak oyunlar için bir oyun sunucusu gerekir; bu sürümde henüz kurulu değil.",
+      "offline": "Oyun sunucusuna ulaşılamadı. Bağlantını kontrol edip tekrar dene.",
+      "notFound": "Bu kodla bir oyun yok."
+    }
+  },
+  "share": {
+    "menu": "Oyunu paylaş (kod ve bağlantı)",
+    "title": "Oyunu paylaş",
+    "intro": "Arkadaşların uygulamayı açıp “Ortak oyuna katıl”a dokunur ve bu kodu girer, ya da bağlantıyı açar.",
+    "code": "Oyun kodu",
+    "send": "Bağlantıyı gönder",
+    "copied": "Bağlantı kopyalandı.",
+    "privacy": "Yalnızca tahta paylaşılır (alınan hatlar, istasyonlar, oyuncular). Biletlerin ve stratejin telefonunda kalır.",
+    "message": "{{code}} koduyla Railtally oyunuma katıl",
+    "room": "Oyun {{code}}",
+    "online": "çevrimiçi",
+    "offline": "çevrimdışı, değişiklikler kaydedilir ve sonra gönderilir",
+    "connecting": "bağlanıyor…",
+    "waiting_one": "{{count}} değişiklik bekliyor",
+    "waiting_other": "{{count}} değişiklik bekliyor",
+    "undoRefused": "Geri alınamadı:"
   }
 }

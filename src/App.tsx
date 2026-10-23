@@ -5,6 +5,7 @@ import { DataCheck } from "./ui/screens/DataCheck";
 import { EndGame } from "./ui/screens/EndGame";
 import { Home } from "./ui/screens/Home";
 import { MapScreen } from "./ui/screens/MapScreen";
+import { JoinGame, joinCodeFromHash } from "./ui/screens/JoinGame";
 import { NewGame } from "./ui/screens/NewGame";
 
 const isDataHash = () => window.location.hash === "#data";
@@ -13,6 +14,10 @@ export function App() {
   const screen = useGame((s) => s.screen);
   const [dataCheck, setDataCheck] = useState(isDataHash);
   useHistory();
+  useEffect(() => {
+    // a shared link (…/#join=CODE) opens the join screen, which reads the code from the hash
+    if (joinCodeFromHash()) useGame.getState().go("join");
+  }, []);
   useEffect(() => {
     const onChange = () => setDataCheck(isDataHash());
     window.addEventListener("hashchange", onChange);
@@ -27,6 +32,8 @@ export function App() {
   switch (screen) {
     case "new":
       return <NewGame />;
+    case "join":
+      return <JoinGame />;
     case "game":
       return <MapScreen />;
     case "summary":
