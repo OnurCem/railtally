@@ -7,7 +7,7 @@ export type LogEntry =
   | { seq: number; kind: "revoke"; actionId: string };
 
 /** Why the server refused a message: a rule code, or one of the protocol codes below. */
-export type RejectCode = RuleCode | "private" | "unknownAction" | "setupLocked" | "malformed";
+export type RejectCode = RuleCode | "private" | "unknownAction" | "setupLocked" | "malformed" | "roomFull" | "tooBig" | "rateLimited";
 
 export type ClientMsg =
   /** (Re)connect: send every entry after `since`. */
@@ -38,3 +38,15 @@ export function normalizeCode(input: string): string | null {
 }
 
 export const formatCode = (code: string) => `${code.slice(0, 3)}-${code.slice(3)}`;
+
+/** Abuse limits, enforced by Room (log length) and by the Worker (the rest). */
+export const LIMITS = {
+  /** a real game is a few hundred entries */
+  maxEntries: 1500,
+  /** bytes of one message */
+  maxMessageBytes: 4096,
+  maxSocketsPerRoom: 10,
+  /** per socket: a burst, then this many per second */
+  burst: 30,
+  perSecond: 5,
+} as const;

@@ -191,6 +191,7 @@ Original plan:
 - A new player whose join is refused after the fact (race) sees only a notice and has no seat.
 - No QR code yet (link and code only); backups export the merged log as a plain local game.
 - Rooms are never deleted on the server.
+- Abuse guards (`LIMITS` in `src/sync/protocol.ts`): 1,500 log entries per room, 4 KB per message, 10 sockets per room, a per-socket rate limit, and `ALLOWED_ORIGIN` (stops other websites only; scripts can fake it). Add a Cloudflare rate-limit rule in the dashboard as well.
 
 ---
 

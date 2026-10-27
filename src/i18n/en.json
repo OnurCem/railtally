@@ -161,7 +161,10 @@
     "private": "This action stays on your phone.",
     "unknownAction": "That action is not in the game any more.",
     "setupLocked": "Players and game setup cannot be undone.",
-    "malformed": "The server did not understand that."
+    "malformed": "The server did not understand that.",
+    "roomFull": "This game is full of entries and cannot take more.",
+    "tooBig": "That message was too large.",
+    "rateLimited": "Too many actions too fast. Wait a moment."
   },
   "dataCheck": {
     "title": "Data check",

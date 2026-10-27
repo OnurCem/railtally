@@ -1,7 +1,7 @@
 import { isPrivateAction, SETUP_ACTIONS, type Action } from "../game/actions";
 import { replayTolerant, tryReduce } from "../game/reducer";
 import { initialState } from "../game/state";
-import type { ClientMsg, LogEntry, RejectCode, ServerMsg } from "./protocol";
+import { LIMITS, type ClientMsg, LogEntry, RejectCode, ServerMsg } from "./protocol";
 
 export interface RoomResult {
   /** sent only to the sender */
@@ -67,6 +67,7 @@ export class Room {
     // a retry after a lost acknowledgement: nothing new to append, the sender learns the entry through "hello"
     if (this.entries.some((e) => e.kind === "action" && e.action.id === action.id)) return { reply: [], appended: [] };
     if (isPrivateAction(action)) return this.reject(action.id, "private");
+    if (this.entries.length >= LIMITS.maxEntries) return this.reject(action.id, "roomFull");
     const { state } = replayTolerant(this.effectiveActions());
     const result = tryReduce(state, action);
     if (!result.ok) return this.reject(action.id, result.error.code);
@@ -77,6 +78,7 @@ export class Room {
     const target = this.entries.find((e) => e.kind === "action" && e.action.id === actionId);
     if (!target || target.kind !== "action") return this.reject(actionId, "unknownAction");
     if (this.revokedIds().has(actionId)) return { reply: [], appended: [] };
+    if (this.entries.length >= LIMITS.maxEntries) return this.reject(actionId, "roomFull");
     if (SETUP_ACTIONS.includes(target.action.type)) return this.reject(actionId, "setupLocked");
     // the log without the target must still replay cleanly: later actions may depend on it
     let state = initialState;

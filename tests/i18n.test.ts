@@ -26,7 +26,7 @@ describe("translations", () => {
       "gameEnded", "unknownRoute", "unknownCity", "unknownPlayer", "unknownTicket", "ticketHeld", "ticketMissing", "routeTaken", "routeNotClaimed", "noTrains",
       "twinOwn", "twinBlocked", "stationTaken", "stationMissing", "noStations", "colorTaken", "tooManyPlayers",
       "tooManyMe", "invalidPlayerCount", "invalidPoints", "gameExists", "noGame",
-      "private", "unknownAction", "setupLocked", "malformed",
+      "private", "unknownAction", "setupLocked", "malformed", "roomFull", "tooBig", "rateLimited",
     ];
     for (const code of codes) {
       expect(en.errors).toHaveProperty(code);

@@ -161,7 +161,10 @@
     "private": "Bu işlem telefonunda kalır.",
     "unknownAction": "Bu işlem artık oyunda yok.",
     "setupLocked": "Oyuncular ve oyun kurulumu geri alınamaz.",
-    "malformed": "Sunucu bunu anlamadı."
+    "malformed": "Sunucu bunu anlamadı.",
+    "roomFull": "Bu oyun dolu, daha fazla işlem alamaz.",
+    "tooBig": "Bu mesaj çok büyüktü.",
+    "rateLimited": "Çok fazla işlem çok hızlı yapıldı. Biraz bekle."
   },
   "dataCheck": {
     "title": "Veri kontrolü",

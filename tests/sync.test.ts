@@ -5,7 +5,7 @@ import { isPrivateAction, makeAction, type Action, type ActionBody } from "../sr
 import { replay, replayTolerant } from "../src/game/reducer";
 import { applyEntries, effectiveLog, newSyncState } from "../src/sync/merge";
 import { MemoryHub } from "../src/sync/memoryTransport";
-import { formatCode, makeRoomCode, normalizeCode } from "../src/sync/protocol";
+import { formatCode, LIMITS, makeRoomCode, normalizeCode } from "../src/sync/protocol";
 import { loadSyncState, RemoteAdapter, type Rejection } from "../src/sync/RemoteAdapter";
 import { Room } from "../src/sync/room";
 
@@ -88,6 +88,26 @@ describe("Room (authority)", () => {
     expect(room.receive({ t: "revoke", actionId: list[2].id }).appended).toHaveLength(1);
     expect(room.receive({ t: "revoke", actionId: list[2].id }).appended).toHaveLength(0); // twice is fine
     expect(replay(room.effectiveActions()).ended).toBe(false);
+  });
+});
+
+describe("Room limits", () => {
+  it("stops growing at the entry cap", () => {
+    const room = new Room();
+    room.receive({ t: "action", action: makeAction({ type: "GAME_CREATED", gameId: "g", playerCount: 2 }, "a") });
+    for (const [i, color] of (["red", "blue"] as const).entries()) {
+      room.receive({ t: "action", action: makeAction({ type: "PLAYER_ADDED", playerId: `p${i}`, name: "", color, isMe: false }, "a") });
+    }
+    // fill the log with claim/unclaim pairs (revoke entries count too)
+    const claim = makeAction({ type: "ROUTE_CLAIMED", routeId: "budapest-wien-a", playerId: "p0" }, "a");
+    room.receive({ t: "action", action: claim });
+    for (let i = 0; room.lastSeq < LIMITS.maxEntries; i++) {
+      room.receive({ t: "action", action: makeAction({ type: "EXPRESS_OVERRIDE", winners: null }, "a") });
+    }
+    const over = makeAction({ type: "EXPRESS_OVERRIDE", winners: null }, "a");
+    expect(room.receive({ t: "action", action: over }).reply[0]).toMatchObject({ code: "roomFull" });
+    expect(room.receive({ t: "revoke", actionId: claim.id }).reply[0]).toMatchObject({ code: "roomFull" });
+    expect(room.lastSeq).toBe(LIMITS.maxEntries);
   });
 });
 
