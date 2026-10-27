@@ -150,7 +150,7 @@ Original plan:
 
 ---
 
-## 8. v4 — Real-time multiplayer (client built, server not deployed)
+## 8. v4 — Real-time multiplayer (server deployed at wss://railtally-sync.onurcem.workers.dev; app not yet redeployed)
 
 **Design (decided):**
 - **Backend:** one Cloudflare Worker with a Durable Object per game code (`server/worker.ts`, SQLite-backed, free plan).
@@ -176,14 +176,14 @@ Original plan:
 - **Tests:** `tests/sync.test.ts` (room, merge, two adapters on an in-memory server: convergence, races, offline,
   duplicates, undo, persistence), `tests/sharedStore.test.ts`, `e2e/shared-game.spec.ts`.
 
-**Needs from you (not done, nothing created yet):**
-1. A free Cloudflare account, then `cd server && npx wrangler login && npx wrangler deploy` (see `server/README.md`).
+**Status:** the Worker is live; `.env.production` sets `VITE_SYNC_URL`, so the next `scripts/deploy-pages.sh` ships "Together" to the Pages site (e2e builds with it emptied). Remaining:
+1. (Done 2026-10-27, owner's account.) A free Cloudflare account, then `cd server && npx wrangler login && npx wrangler deploy` (see `server/README.md`).
 2. Tell the app the address: `VITE_SYNC_URL=wss://… npm run build`, or for a quick test
    `localStorage.setItem("railtally:syncUrl", "wss://…")` on a phone. Without it the "Together" button is disabled.
 3. Then a real two-phone test.
 
 **Known limits:**
-- No real network test yet (only the in-memory server); `webSocketTransport.ts` and `server/worker.ts` are untested.
+- Tested over a real WebSocket from Node only (`LIVE_SYNC_URL=wss://… npx vitest run tests/liveSync.test.ts`); not yet with two real phones.
 - The code is the only secret: anyone who guesses a code can join or write. Fine for friends; add a per-room secret
   if it matters.
 - If the server loses a room, clients that are ahead are not re-uploaded (no resync from client to server).
